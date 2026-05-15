@@ -18,7 +18,7 @@ function ConsultaCard({
       <div style={headerStyle}>
 
         <div style={userStyle}>
-          👷 {consulta.usuario_nombre || "Usuario"}
+          👷 {consulta.usuario?.nombre || "Usuario"}
         </div>
 
         <div style={dateStyle}>
