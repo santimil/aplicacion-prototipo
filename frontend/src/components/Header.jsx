@@ -114,20 +114,30 @@ function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchO
 
     const validResults = results.filter(r => r.numero && r.cliente);
 
-    if (mode === "manual") {
-      console.log("RESULTADOS FINALES:", results);
+    if (validResults.length > 1) {
+
+      const autoCreate = confirm(
+        `Se detectaron ${validResults.length} órdenes.\n\n` +
+        `Aceptar = crear automáticamente\n` +
+        `Cancelar = revisar una por una`
+      );
+
+      if (autoCreate) {
+
+        await handleAutoCreate(validResults);
+
+      } else {
+
+        setPrefillQueue(validResults);
+        setCurrentPrefill(validResults[0] || null);
+        setView("form");
+      }
+
+    } else {
+
       setPrefillQueue(validResults);
       setCurrentPrefill(validResults[0] || null);
       setView("form");
-    } else {
-      if (mode === "auto") {
-        const confirmCreate = confirm(
-          `Se crearán ${results.length} órdenes. ¿Continuar?`
-        );
-
-        if (!confirmCreate) return;
-      }
-      await handleAutoCreate(validResults);
     }
   }
 
