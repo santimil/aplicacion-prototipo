@@ -69,7 +69,12 @@ export async function getConsultasByOrden(req, res) {
 
     const { data, error } = await supabase
       .from("consultas_orden")
-      .select("*")
+      .select(`
+        *,
+        usuario:usuario_id (
+          nombre
+        )
+      `)
       .eq("orden_id", ordenId)
       .order("created_at", {
         ascending: true
