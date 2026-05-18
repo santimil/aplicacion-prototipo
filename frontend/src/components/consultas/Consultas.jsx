@@ -18,6 +18,7 @@ function ConsultasView({ order, user, onClose }) {
 
       try {
         const data = await getConsultas(order.id);
+        console.log("consultas 2", data);
         setConsultas(data.reverse());
 
       } catch (err) {

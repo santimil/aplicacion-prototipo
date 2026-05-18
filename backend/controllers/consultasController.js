@@ -71,7 +71,7 @@ export async function getConsultasByOrden(req, res) {
       .from("consultas_orden")
       .select(`
         *,
-        usuario:usuario_id (
+        usuario:consultas_orden_usuario_id_fkey1 (
           nombre
         )
       `)
