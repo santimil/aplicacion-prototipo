@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 export default function ControlDetail({ control, setView, onUpdateCheck, handleSentToEntrega }) {
 
-  const [observaciones, setObservaciones] = useState("");
+  const [observaciones, setObservaciones] = useState({});
 
   const allApproved = control.control_chequeo.every(
     c =>
@@ -22,6 +22,7 @@ export default function ControlDetail({ control, setView, onUpdateCheck, handleS
   }
 
   const checks = control.control_chequeo || [];
+  console.log("checks", checks);
 
   return (
     <div style={{
@@ -137,7 +138,7 @@ export default function ControlDetail({ control, setView, onUpdateCheck, handleS
 
                 <button
                   onClick={() =>
-                    onUpdateCheck(check.id, "aprobado", observaciones[control.id] || "")
+                    onUpdateCheck(check.id, "aprobado", observaciones[check.id] || "")
                   }
                   style={{
                     background: "#1E4620",
@@ -153,7 +154,7 @@ export default function ControlDetail({ control, setView, onUpdateCheck, handleS
 
                 <button
                   onClick={() =>
-                    onUpdateCheck(check.id, "rechazado", observaciones[control.id] || "")
+                    onUpdateCheck(check.id, "rechazado", observaciones[check.id] || "")
                   }
                   style={{
                     background: "#4A1C1C",
@@ -169,7 +170,7 @@ export default function ControlDetail({ control, setView, onUpdateCheck, handleS
 
                 <button
                   onClick={() =>
-                    onUpdateCheck(check.id, "no_aplica", observaciones[control.id] || "")
+                    onUpdateCheck(check.id, "no_aplica", observaciones[check.id] || "")
                   }
                   style={{
                     background: "#3A331A",
@@ -186,12 +187,16 @@ export default function ControlDetail({ control, setView, onUpdateCheck, handleS
               </div>
 
               <textarea
-                value={observaciones[control.id] || control.observacion || ""}
+                value={
+                  observaciones[check.id]
+                    ?? check.observacion
+                    ?? ""
+                }
                 onChange={(e) =>
-                    setObservaciones(prev => ({
+                  setObservaciones(prev => ({
                     ...prev,
-                    [control.id]: e.target.value
-                    }))
+                    [check.id]: e.target.value
+                  }))
                 }
                 placeholder="Observaciones..."
                 style={{

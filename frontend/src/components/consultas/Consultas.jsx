@@ -93,18 +93,48 @@ function ConsultasView({ order, user, onClose }) {
   }
 
   return (
-    <div style={{
-          padding: "8px 10px",
-          paddingBottom: 80
-        }}>
-          <div style={{
-            padding: "8px 10px",
+    <div
+      style={{
+        padding: "8px 10px",
+        paddingBottom: 80
+      }}
+    >
+
+      {/* HEADER */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginBottom: 10
+        }}
+      >
+        <button
+          onClick={onClose}
+          style={{
+            background: "transparent",
+            border: "none",
+            color: "#FFB74D",
+            fontSize: 22,
+            cursor: "pointer",
+            marginRight: 10
+          }}
+        >
+          ←
+        </button>
+
+        <div
+          style={{
+            flex: 1,
+            textAlign: "center",
             fontSize: 22,
             fontWeight: "bold",
-            color: "#FFB74D"
-          }}>
-            {order.numero}
-          </div>
+            color: "#FFB74D",
+            marginRight: 32
+          }}
+        >
+          {order.numero}
+        </div>
+      </div>
 
       <NuevaConsultaBox
         onCreate={handleCreateConsulta}
@@ -115,6 +145,7 @@ function ConsultasView({ order, user, onClose }) {
         isAdmin={user.rol === "admin"}
         onResponder={handleSaveRespuesta}
       />
+
     </div>
   );
 }

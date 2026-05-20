@@ -29,7 +29,7 @@ function getAreaData(areaId) {
   return AREAS.find(a => a.id === areaId);
 }
 
-function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFilterArea, onOpenCuestionario }) {
+function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFilterArea, onOpenCuestionario, onOpenConsultas }) {
   return (
     <div style={{ padding: 12, paddingBottom: 80}}>
 
@@ -134,6 +134,24 @@ function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFil
             }}>
               {o.numero}
             </span>
+
+            <button
+              onClick={(e) => {
+                  e.stopPropagation(); // ⚠️ IMPORTANTE
+                  onOpenConsultas(o);
+                }}
+              style={{
+                background: "#1A1A1A",
+                color: "#777",
+                border: "1px solid #2A2A2A",
+                borderRadius: 6,
+                padding: "4px 8px",
+                cursor: "pointer",
+                fontSize: 12
+              }}
+              >
+                📋 consultas
+              </button>
 
             <span style={{
               fontSize: 10,

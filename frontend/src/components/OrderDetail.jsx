@@ -230,7 +230,7 @@ export async function exportToExcel(order) {
     doc.save(`orden_${order.numero}.pdf`);
   }
 
-function OrderDetail({ orderId, orders, onBack, onMove, onUpdate, onOpenHistorial, users, user, handleControl }) {
+function OrderDetail({ orderId, orders, onRefresh, onBack, onMove, onUpdate, onOpenHistorial, users, user, handleControl }) {
 
   const order = orders.find(o => o.id === orderId);
 
@@ -341,6 +341,8 @@ function OrderDetail({ orderId, orders, onBack, onMove, onUpdate, onOpenHistoria
   async function handleSendToControl() {
     try {
       await sendOrderToControl(order.id);
+
+      await onRefresh();
 
       alert("Orden enviada a control");
 

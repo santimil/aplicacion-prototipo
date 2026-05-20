@@ -254,6 +254,7 @@ function App() {
   });
 
   const handleControl = async (id) => {
+    window.scrollTo(0, 0);
     try {
       const data = await getControlByOrder(id);
 
@@ -267,6 +268,7 @@ function App() {
   };
 
   const handleEntrega = async (control_id) => {
+    window.scrollTo(0, 0);
     try {
       const updated = await aprobarControl(
         control_id,
@@ -351,6 +353,7 @@ function App() {
             onSelectOrder={(order) => {
               setSelectedOrder(order);
               setView("detail");
+              window.scrollTo(0, 0);
             }}
             onOpenCuestionario={(order) => {
               setSelectedOrder(order);
@@ -378,6 +381,10 @@ function App() {
               setSelectedOrder(order);
               setView("cuestionarioView");
             }}
+            onOpenConsultas={(order) => {
+              setSelectedOrder(order);
+              setView("Consultas");
+            }}
           />
         )}
 
@@ -385,6 +392,7 @@ function App() {
           <OrderDetail 
             orderId={selectedOrder.id}
             orders={orders}
+            onRefresh={fetchOrders}
             onBack={() => setView("kanban")}
             onMove={moveOrder}
             onUpdate={handleUpdateOrder}
