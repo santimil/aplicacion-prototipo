@@ -5,7 +5,7 @@ import OrderDetail from "./components/OrderDetail";
 import Kanban from "./components/Kanban";
 import OrderForm from "./components/OrderForm";
 import { getOrders, createOrder, getUsuarios, updateOrder, 
-  updateControlCheck, getControlByOrder, aprobarControl } from "./services/api";
+  updateControlCheck, getControlByOrder, revisarControl } from "./services/api";
 import Header from "./components/Header";
 import BottomNav from "./components/BottomNav";
 import ListView from "./components/ListView";
@@ -28,23 +28,32 @@ function App() {
   const [user, setUser] = useState(null);
   const [loadingSession, setLoadingSession] = useState(true);
   const [control, setControl] = useState(null);
+
   const moveOrder = async (orderId, newArea) => {
     const previousOrders = [...orders];
 
     try {
+
       // 1. actualización optimista
       setOrders(prev =>
         prev.map(o =>
-          o.id === orderId ? { ...o, area: newArea } : o
+          o.id === orderId
+            ? {
+                ...o,
+                area: newArea,
+                asignado_a: null
+              }
+            : o
         )
       );
 
-      // 2. llamada al backend
+      // 2. backend
       const updatedOrder = await updateOrder(orderId, {
-        area: newArea
+        area: newArea,
+        asignado_a: null
       });
 
-      // 3. sincronizar con DB
+      // 3. sync DB
       setOrders(prev =>
         prev.map(o =>
           o.id === orderId ? updatedOrder : o
@@ -52,9 +61,9 @@ function App() {
       );
 
     } catch (error) {
+
       console.error("Error moviendo orden:", error);
 
-      // rollback
       setOrders(previousOrders);
     }
   };
@@ -254,30 +263,38 @@ function App() {
   });
 
   const handleControl = async (id) => {
+      window.scrollTo(0, 0);
+      try {
+        const data = await getControlByOrder(id);
+
+        setControl(data);
+        setView("control");
+
+      } catch (err) {
+        console.error(err);
+        alert(err.message);
+      }
+    };
+
+    const handleRevisionControl = async (
+    control_id,
+    accion
+  ) => {
+
     window.scrollTo(0, 0);
+
     try {
-      const data = await getControlByOrder(id);
 
-      setControl(data);
-      setView("control");
-
-    } catch (err) {
-      console.error(err);
-      alert(err.message);
-    }
-  };
-
-  const handleEntrega = async (control_id) => {
-    window.scrollTo(0, 0);
-    try {
-      const updated = await aprobarControl(
+      const updated = await revisarControl(
         control_id,
-        user.id
+        user.id,
+        accion
       );
 
       console.log("UPDATED:", updated);
 
       setControl(updated.control);
+
       setSelectedOrder(updated.orden);
 
       setOrders(prev =>
@@ -291,9 +308,13 @@ function App() {
       setView("detail");
 
     } catch (err) {
-      console.error("Error aprobando orden", err);
+
+      console.error(
+        `Error ${accion} orden`,
+        err
+      );
     }
-  }
+  };
 
   const handleUpdateCheck = async ( checkId, estado, observacion ) => {
     try {
@@ -429,6 +450,10 @@ function App() {
               setSelectedOrder(order);
               setView("cuestionarioView");
             }}
+            onOpenConsultas={(order) => {
+              setSelectedOrder(order);
+              setView("Consultas");
+            }}
           />
         )}
 
@@ -472,7 +497,12 @@ function App() {
             control={control}
             setView={setView}
             onUpdateCheck={handleUpdateCheck}
-            handleSentToEntrega={handleEntrega}
+            handleSentToEntrega={() =>
+              handleRevisionControl(control.id, "aprobar")
+            }
+            handleReject={() =>
+              handleRevisionControl(control.id, "rechazar")
+            }
           />
         )}
 

@@ -204,6 +204,17 @@ export async function exportToExcel(order) {
       doc.setTextColor(255, 140, 0);
       doc.text(h.area_nueva, 18 + offset + arrowOffset, y);
 
+      doc.setFontSize(9);
+      doc.setTextColor(110);
+
+      y += 5;
+
+      doc.text(
+        `trabajado por: ${h.usuario?.nombre || "-"}`,
+        22,
+        y
+      );
+
       doc.setTextColor(0);
 
       y += 10; // más espacio entre items

@@ -18,6 +18,19 @@ function HistorialView({ order, onClose }) {
       <div style={modal}>
 
         <h3 style={{ color: "#FFB74D" }}>
+          <button
+            onClick={onClose}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#FFB74D",
+              fontSize: 22,
+              cursor: "pointer",
+              marginRight: 10
+            }}
+          >
+            ←
+          </button>
           🕓 Historial - {order.numero}
         </h3>
 
@@ -43,6 +56,14 @@ function HistorialView({ order, onClose }) {
                     {" → "}
                     <span style={{ color: "#FFB74D" }}>{h.area_nueva}</span>
                 </div>
+              </div>
+
+              <div style={{
+                fontSize: 12,
+                color: "#777",
+                marginTop: 4
+              }}>
+                👷 {h.usuario?.nombre || "Sin usuario"}
               </div>
             </div>
           ))

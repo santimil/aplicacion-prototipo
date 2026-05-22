@@ -300,20 +300,24 @@ export async function sendOrderToControl(orderId) {
   return res.json();
 }
 
-export async function aprobarControl(controlId, aprobadoPor) {
+export async function revisarControl(
+  controlId,
+  revisadoPor,
+  accion
+) {
   const res = await authFetch(
-    `/control/aprobar/${controlId}`,
+    `/control/revisar/${controlId}`,
     {
       method: "PUT",
       body: JSON.stringify({
-        aprobado_por: aprobadoPor
+        revisado_por: revisadoPor,
+        accion
       })
     }
   );
 
   return res.json();
 }
-
 
 export async function updateControlCheck(
   checkId,

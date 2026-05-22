@@ -145,6 +145,7 @@ export async function updateOrder(req, res) {
 
     const updates = {};
     let oldArea = null;
+    let oldAssigned = null;
 
     if (numero !== undefined) updates.numero = numero;
     if (cliente !== undefined) updates.cliente = cliente;
@@ -154,13 +155,14 @@ export async function updateOrder(req, res) {
 
       const { data: existingOrder, error: fetchError } = await supabase
         .from("orden")
-        .select("area")
+        .select("area, asignado_a")
         .eq("id", id)
         .single();
 
       if (fetchError) throw fetchError;
 
       oldArea = existingOrder.area;
+      oldAssigned = existingOrder.asignado_a;
     }
     if (prioridad !== undefined) updates.prioridad = prioridad;
     if (dias_asignados !== undefined) {
@@ -213,7 +215,7 @@ export async function updateOrder(req, res) {
             area_anterior: oldArea,
             area_nueva: area,
             timestamp:  new Date().toISOString(),
-            usuario_id: creado_por
+            usuario_id: oldAssigned
           }
         ]);
 

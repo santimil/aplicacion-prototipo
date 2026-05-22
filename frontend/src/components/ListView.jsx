@@ -30,6 +30,8 @@ function getAreaData(areaId) {
 }
 
 function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFilterArea, onOpenCuestionario, onOpenConsultas }) {
+  console.log("onOpenConsultas:", onOpenConsultas);
+  
   return (
     <div style={{ padding: 12, paddingBottom: 80}}>
 

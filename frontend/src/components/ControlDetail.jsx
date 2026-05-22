@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function ControlDetail({ control, setView, onUpdateCheck, handleSentToEntrega }) {
+export default function ControlDetail({ control, setView, onUpdateCheck, handleSentToEntrega, handleReject }) {
 
   const [observaciones, setObservaciones] = useState({});
 
@@ -8,6 +8,10 @@ export default function ControlDetail({ control, setView, onUpdateCheck, handleS
     c =>
         c.estado === "aprobado" ||
         c.estado === "no_aplica"
+  );
+
+  const hasRejected = control.control_chequeo.some(
+    c => c.estado === "rechazado"
   );
 
   if (!control) {
@@ -234,6 +238,25 @@ export default function ControlDetail({ control, setView, onUpdateCheck, handleS
             }}
         >
             📦 Enviar a entrega
+        </button>
+       )}
+
+       {hasRejected && (
+        <button
+            onClick={() => handleReject(control.id)}
+            style={{
+            width: "100%",
+            marginTop: 20,
+            padding: "14px",
+            borderRadius: 10,
+            border: "none",
+            background: "#D42233",
+            color: "#0D0D0D",
+            fontWeight: "bold",
+            cursor: "pointer"
+            }}
+        >
+            Volver a Armado
         </button>
        )}
 

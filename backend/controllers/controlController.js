@@ -88,11 +88,13 @@ export async function createControl(req, res) {
 }
 
 export async function getControl(req, res) {
-    const { orderId } = req.params;
 
-    const supabase = createSupabaseClient(req);
+  const { orderId } = req.params;
 
-    const { data: control, error: fetchError } = await supabase
+  const supabase = createSupabaseClient(req);
+
+  // 1️⃣ buscar controles de la orden
+  const { data: controles, error } = await supabase
     .from("control")
     .select(`
       *,
@@ -107,15 +109,28 @@ export async function getControl(req, res) {
       )
     `)
     .eq("orden_id", orderId)
-    .single();
+    .order("creado", {
+      ascending: false
+    });
 
-    console.log("control", control);
+  if (error) {
+    return res.status(500).json({
+      error
+    });
+  }
 
-    if (fetchError) {
-      return res.status(500).json({ error: fetchError });
-    }
+  // 2️⃣ buscar pendiente
+  let control =
+    controles.find(c => c.estado === "pendiente");
 
-    res.json(control);
+  // 3️⃣ si no hay pendiente → usar más reciente
+  if (!control) {
+    control = controles[0];
+  }
+
+  console.log("control seleccionado", control);
+
+  res.json(control);
 }
 
 export async function updateControlCheck(req, res) {
@@ -147,12 +162,51 @@ export async function updateControlCheck(req, res) {
   res.json(data);
 }
 
-export async function aprovarOrden(req, res) {
+export async function revisarOrden(req, res) {
 
   const { id } = req.params;
-  const { aprobado_por } = req.body;
+  const {
+    revisado_por,
+    accion
+  } = req.body;
 
   const supabase = createSupabaseClient(req);
+
+  const config = {
+    aprobar: {
+      estado: "aprobado",
+      nextArea: "entrega",
+
+      validate: checks =>
+        checks.every(
+          c =>
+            c.estado === "aprobado" ||
+            c.estado === "no_aplica"
+        ),
+
+      errorMessage: "Hay chequeos pendientes"
+    },
+
+    rechazar: {
+      estado: "rechazado",
+      nextArea: "armado",
+
+      validate: checks =>
+        checks.some(
+          c => c.estado === "rechazado"
+        ),
+
+      errorMessage: "No hay chequeos rechazados"
+    }
+  };
+
+  const current = config[accion];
+
+  if (!current) {
+    return res.status(400).json({
+      error: "Acción inválida"
+    });
+  }
 
   // 1️⃣ buscar chequeos
   const { data: checks, error: checksError } =
@@ -168,15 +222,11 @@ export async function aprovarOrden(req, res) {
   }
 
   // 2️⃣ validar
-  const allApproved = checks.every(
-    c =>
-      c.estado === "aprobado" ||
-      c.estado === "no_aplica"
-  );
+  const isValid = current.validate(checks);
 
-  if (!allApproved) {
+  if (!isValid) {
     return res.status(400).json({
-      error: "Hay chequeos pendientes"
+      error: current.errorMessage
     });
   }
 
@@ -185,15 +235,15 @@ export async function aprovarOrden(req, res) {
   .map(c => c.observacion)
   .join("\n");
 
-  // 3️⃣ aprobar control
+  // 3️⃣ aactualizar control
 
   const { data: control, error: controlError } = await supabase
     .from("control")
     .update({
-      estado: 'aprobado',
+      estado: current.estado,
       observaciones: observacionesGenerales,
-      aprobado_por,
-      fecha_aprobacion: new Date()
+      revisado_por,
+      fecha_revision: new Date()
     })
     .eq("id", id)
     .select()
@@ -212,7 +262,7 @@ export async function aprovarOrden(req, res) {
   const { data: orden, error: ordenError } = await supabase
     .from("orden")
     .update({
-      area: 'entrega'
+      area: current.nextArea
     })
     .eq("id", orden_id)
     .select()
@@ -222,6 +272,27 @@ export async function aprovarOrden(req, res) {
     return res.status(500).json({
       error: ordenError
     });
+  }
+
+  // 5️⃣ guardar historial
+  const { error: historialError } =
+    await supabase
+      .from("historial")
+      .insert([
+        {
+          order_id: orden_id,
+          area_anterior: "control",
+          area_nueva: current.nextArea,
+          usuario_id: revisado_por,
+          timestamp: new Date().toISOString()
+        }
+      ]);
+
+  if (historialError) {
+    console.error(
+      "Error guardando historial:",
+      historialError
+    );
   }
 
   console.log("orden", orden);
