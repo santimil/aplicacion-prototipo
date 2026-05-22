@@ -301,12 +301,12 @@ export async function sendOrderToControl(orderId) {
 }
 
 export async function revisarControl(
-  controlId,
+  controlID,
   revisadoPor,
   accion
 ) {
   const res = await authFetch(
-    `/control/revisar/${controlId}`,
+    `/control/revisar/${controlID}`,
     {
       method: "PUT",
       body: JSON.stringify({
