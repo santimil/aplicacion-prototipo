@@ -453,7 +453,7 @@ function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchO
 
               {/* MIS ÓRDENES */}
                 <button
-                  onClick={() => { setView("misOrdenes"); setPrev("misOrdenes"); }}
+                  onClick={() => { setView("misOrdenes"); setPrev(); }}
                   style={menuItemStyle}
                 >
                   <span style={{ fontSize: 20 }}>👤</span>

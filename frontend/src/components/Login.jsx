@@ -20,7 +20,7 @@ function Login({ onLogin }) {
       setError(error.message);
       setLoading(false);
     } else {
-      onLogin(data.user);
+      setLoading(false);
     }
   };
 

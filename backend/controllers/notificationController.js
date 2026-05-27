@@ -61,6 +61,7 @@ export async function getNotifications(req, res) {
   const supabase = createSupabaseClient(req);
 
   try {
+
     const {
       data: { user }
     } = await supabase.auth.getUser();
@@ -68,7 +69,7 @@ export async function getNotifications(req, res) {
     const { data, error } = await supabase
       .from("notificaciones")
       .select("*")
-      .eq("usuario_id", user.id)
+      .or(`usuario_id.eq.${user.id},usuario_id.is.null`)
       .order("creado", { ascending: false });
 
     if (error) throw error;

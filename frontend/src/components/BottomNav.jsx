@@ -1,4 +1,4 @@
-function BottomNav({ view, setView, setPrev }) {
+function BottomNav({ view, goToView }) {
   return (
     <div style={{
       position: "fixed",
@@ -13,7 +13,7 @@ function BottomNav({ view, setView, setPrev }) {
 
       {/* TABLERO */}
       <button
-        onClick={() => {setView("kanban"), setPrev("kanban")}}
+        onClick={() => goToView("kanban")}
         style={{
           flex: 1,
           padding: "10px 4px",
@@ -34,7 +34,7 @@ function BottomNav({ view, setView, setPrev }) {
 
       {/* LISTA */}
       <button
-        onClick={() => {setView("list"), setPrev("list")}}
+        onClick={() => goToView("list")}
         style={{
           flex: 1,
           padding: "10px 4px",
