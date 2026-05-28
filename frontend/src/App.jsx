@@ -291,7 +291,7 @@ function App() {
         {view === "cuestionario" && selectedOrder && (
           <CuestionarioModal
             order={selectedOrder}
-            onClose={resetNavigation("kanban")}
+            onClose={() => resetNavigation("kanban")}
             onSaveLocal={handleUpdateCuestionario}
           />
         )}
