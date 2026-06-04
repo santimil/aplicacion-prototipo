@@ -70,7 +70,27 @@ export async function createControl(req, res) {
 
 
     if (updateError) {
-      console.error("ERROR MOVIENDO:", updateError);
+      return res.status(500).json({
+        error: "Error moviendo orden a control"
+      });
+    }
+
+    const { error: historialError } = await supabase
+    .from("historial")
+    .insert([
+      {
+        order_id: order.id,
+        area_anterior: order.area,
+        area_nueva: "control",
+        timestamp: new Date().toISOString(),
+        usuario_id: order.asignado_a
+      }
+    ]);
+
+    if (historialError) {
+      return res.status(500).json({
+          error: "Error guardando historial: " + historialError 
+        });
     }
 
     res.json({
