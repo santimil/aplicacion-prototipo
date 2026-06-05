@@ -106,7 +106,7 @@ function CuestionarioView({ order, onClose, onEdit }) {
       <div style={modal}>
 
         <h3 style={{ color: "#FFB74D" }}>
-          📋 Cuestionario - {order.numero}
+          📋 Detalles - {order.numero}
         </h3>
 
         <Field label="Color" value={cuestionario.color} />

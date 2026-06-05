@@ -1,0 +1,52 @@
+import Kanban from "../components/Kanban";
+
+function KanbanView({
+  filteredOrders,
+  usuarios,
+  search,
+  setSearch,
+  filterArea,
+  setFilterArea,
+  setSelectedOrder,
+  goToView
+}) {
+
+  const openOrderDetail = (order) => {
+
+    setSelectedOrder(order);
+
+    goToView("detail");
+
+    window.scrollTo(0, 0);
+  };
+
+  const openCuestionarioView = (order) => {
+
+    setSelectedOrder(order);
+
+    goToView("cuestionarioView");
+  };
+
+  const openConsultas = (order) => {
+
+    setSelectedOrder(order);
+
+    goToView("Consultas");
+  };
+
+  return (
+    <Kanban
+      orders={filteredOrders}
+      users={usuarios}
+      search={search}
+      setSearch={setSearch}
+      filterArea={filterArea}
+      setFilterArea={setFilterArea}
+      onSelectOrder={openOrderDetail}
+      onOpenCuestionario={openCuestionarioView}
+      onOpenConsultas={openConsultas}
+    />
+  );
+}
+
+export default KanbanView;

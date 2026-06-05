@@ -1,267 +1,49 @@
-import { useRef, useState, useEffect } from "react";
-import imageCompression from "browser-image-compression";
-import { cleanData } from "../services/cleanData";
-import { supabase } from "../supabaseClient";
-import { uploadFile, createOrder, updateCuestionario, getNotifications, markNotificationAsRead } from "../services/api";
+import { useRef, useState } from "react";
+import { useNotifications } from "../hooks/useNotifications";
+import { useMenu } from "../hooks/useMenu";
+import { useOCR } from "../hooks/useOCR";
 
-function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchOrders, setView, selectO, user, view, setPrev, handleLogout }) {
+function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchOrders, selectO, user, view, goToView, resetNavigation, handleLogout }) {
 
   const cameraRef = useRef();
   const fileRef = useRef();
-  const [pendingFiles, setPendingFiles] = useState([]);
-  const [showModeSelector, setShowModeSelector] = useState(false);
-  const [mode, setMode] = useState("manual");
-  const [loadingOCR, setLoadingOCR] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [totalFiles, setTotalFiles] = useState(0);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [notifications, setNotifications] = useState([]);
-  const [showNotifications, setShowNotifications] = useState(false);
+  const {
+    notifications,
+    unreadCount,
+    showNotifications,
+    setShowNotifications,
+    handleNotificationClick
+  } = useNotifications({
+    orders,
+    selectO,
+    goToView
+  });
+  const {
+    menuOpen,
+    setMenuOpen,
+    openMenu,
+    closeMenu,
+    toggleMenu
+  } = useMenu();
+  const {
+    loadingOCR,
+    currentIndex,
+    totalFiles,
+    pendingFiles,
+    showModeSelector,
+    closeModeSelector,
+    mode,
+    handleImage,
+    handleModeSelect
+  } = useOCR({
+    setPrefillQueue,
+    setCurrentPrefill,
+    goToView,
+    user,
+    fetchOrders,
+    resetNavigation
+  });
 
-
-  async function handleImage(e) {
-    const files = Array.from(e.target.files);
-    if (!files.length) return;
-
-    if (files.length === 1) {
-      processFiles(files, "manual");
-    } else {
-      setPendingFiles(files);
-      setShowModeSelector(true);
-    }
-  }
-
-  async function processFiles(files, mode) {
-    setLoadingOCR(true);
-    setTotalFiles(files.length);
-
-    const results = [];
-
-    for (let i = 0; i < files.length; i++) {
-      setCurrentIndex(i + 1);
-
-      const file = files[i];
-      let data;
-
-      const formData = new FormData();
-
-      // 🔥 UN SOLO LUGAR para decidir tipo
-      if (file.type.startsWith("image/")) {
-
-        const compressedFile = await imageCompression(file, {
-          maxSizeMB: 0.35,
-          maxWidthOrHeight: 1280,
-          useWebWorker: true
-        });
-
-        formData.append("file", compressedFile);
-
-      } else if (
-        file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-        file.type === "application/vnd.ms-excel"
-      ) {
-
-        formData.append("file", file);
-
-      } else if (file.type === "application/pdf") {
-
-        formData.append("file", file);
-
-      } else {
-        console.warn("Tipo no soportado:", file.type);
-        continue;
-      }
-
-      try {
-        data = await uploadFile(formData);
-
-      } catch (err) {
-        console.error(
-          "Error procesando archivo:",
-          file.name,
-          err
-        );
-
-        continue;
-      }
-
-      // 🆕 Excel con metadata
-      let items = [];
-
-      // 🧠 Normalizar respuesta
-      if (data?.data) {
-        // Excel
-        if (data.skipped > 0) {
-          alert(`⚠️ ${data.skipped} filas inválidas ignoradas`);
-        }
-        items = data.data;
-
-      } else if (Array.isArray(data)) {
-        // PDF o múltiples
-        items = data;
-
-      } else {
-        // Imagen o único
-        items = [data];
-      }
-
-      // 🔥 Un solo punto de limpieza
-      const cleanedArray = items.map(d => cleanData(d));
-      results.push(...cleanedArray);
-    }
-
-    setLoadingOCR(false);
-
-    const validResults = results.filter(r => r.numero && r.cliente);
-
-    if (validResults.length > 1) {
-
-      const autoCreate = confirm(
-        `Se detectaron ${validResults.length} órdenes.\n\n` +
-        `Aceptar = crear automáticamente\n` +
-        `Cancelar = revisar una por una`
-      );
-
-      if (autoCreate) {
-
-        await handleAutoCreate(validResults);
-
-      } else {
-
-        setPrefillQueue(validResults);
-        setCurrentPrefill(validResults[0] || null);
-        setView("form");
-      }
-
-    } else {
-
-      setPrefillQueue(validResults);
-      setCurrentPrefill(validResults[0] || null);
-      setView("form");
-    }
-  }
-
-  function handleModeSelect(selectedMode) {
-    setMode(selectedMode);
-    setShowModeSelector(false);
-    processFiles(pendingFiles, selectedMode);
-    setPendingFiles([]);
-  }
-
-  async function handleAutoCreate(prefills) {
-    try {
-      for (const prefill of prefills) {
-        console.log("PREFILL:", prefill);
-        // 1️⃣ crear orden
-        const order = await createOrder({
-          ...prefill,
-          diasAsignados: prefill.diasAsignados || 10,
-          usuario_id: user.id
-        });
-
-        // 2️⃣ actualizar cuestionario
-        if (prefill.cuestionario) {
-          await updateCuestionario(order.id, prefill.cuestionario);
-        }
-      }
-
-      // 3️⃣ volver a kanban
-      await fetchOrders();
-      setView("kanban");
-
-    } catch (err) {
-      console.error("Error en auto create:", err);
-    }
-  }
-
-  const unreadCount = notifications.filter(n => !n.leido).length;
-
-  const fetchNotifications = async () => {
-    try {
-      const data = await getNotifications();
-
-      setNotifications(data);
-
-    } catch (err) {
-      console.error(
-        "Error cargando notificaciones",
-        err
-      );
-    }
-  };
-
-  async function handleNotificationClick(n) {
-    try {
-      // 1. actualizar estado local
-      setNotifications(prev =>
-        prev.map(item =>
-          item.id === n.id ? { ...item, leido: true } : item
-        )
-      );
-
-      // 2. marcar como leída si no lo esta
-      if (!n.leido) {
-        try {
-          await markNotificationAsRead(n.id);
-
-        } catch (err) {
-          console.error(
-            "Error marcando como leída",
-            err
-          );
-        }
-      }
-
-      // 3. buscar la orden en memoria
-      const order = orders.find(o => o.id === n.order_id);
-
-      if (!order) {
-        console.warn("Orden no encontrada en frontend");
-        return;
-      }
-
-      // 4. setear
-      selectO(order);
-      if (
-        n.tipo === "consulta_nueva" ||
-        n.tipo === "consulta_respondida"
-      ) {
-
-        setView("Consultas");
-
-      } else {
-
-        setView("detail");
-      }
-
-      // 5. cerrar menú
-      setMenuOpen(false);
-      setShowNotifications(false);
-
-    } catch (err) {
-      console.error("Error al abrir notificación", err);
-    }
-  }
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (!e.target.closest(".menu-container")) {
-        setMenuOpen(false);
-      }
-    };
-
-    if (menuOpen) {
-      window.addEventListener("click", handleClickOutside);
-    }
-
-    return () => {
-      window.removeEventListener("click", handleClickOutside);
-    };
-  }, [menuOpen]);
-
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
 
   return (
     <div style={{
@@ -282,7 +64,7 @@ function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchO
         accept="image/*"
         capture="environment"
         style={{ display: "none" }}
-        onChange={(e) => handleImage(e, "camera")}
+        onChange={(e) => handleImage(e)}
       />
 
       <input
@@ -365,9 +147,7 @@ function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchO
 
         <div className="menu-container">
           <button 
-            onClick={() => {
-              setMenuOpen(!menuOpen);
-            }}
+            onClick={toggleMenu}
             style={{
               position: "relative",
               fontSize: 20,
@@ -453,7 +233,7 @@ function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchO
 
               {/* MIS ÓRDENES */}
                 <button
-                  onClick={() => { setView("misOrdenes"); setPrev(); }}
+                  onClick={() => resetNavigation("misOrdenes")}
                   style={menuItemStyle}
                 >
                   <span style={{ fontSize: 20 }}>👤</span>
@@ -473,7 +253,7 @@ function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchO
       {showModeSelector && (
         <div 
         style={overlayStyle}
-        onClick={() => setShowModeSelector(false)}>
+        onClick={() => closeModeSelector()}>
           <div 
           onClick={(e) => e.stopPropagation()}
           style={modalStyle}>

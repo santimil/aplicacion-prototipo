@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
 import Login from "./components/Login";
 import OrderDetail from "./components/OrderDetail";
-import Kanban from "./components/Kanban";
+import KanbanView from "./views/KanbanView";
 import OrderForm from "./components/OrderForm";
 import Header from "./components/Header";
 import BottomNav from "./components/BottomNav";
-import ListView from "./components/ListView";
+import OrdersListView from "./views/OrdersListView";
 import CuestionarioModal from "./components/CuestionarioModal";
 import CuestionarioView from "./components/CuestionarioView";
 import HistorialView from "./components/HistorialView";
@@ -17,9 +17,9 @@ import { useOrders } from "./hooks/useOrders";
 import { useControl } from "./hooks/useControl";
 import { useUsers } from "./hooks/useUsers";
 import { useNavigation } from "./hooks/useNavigation";
+import { useFilteredOrders } from "./hooks/useFilteredOrders";
 
 function App() {
-  const [history, setHistory] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [search, setSearch] = useState("");
   const [filterArea, setFilterArea] = useState("all");
@@ -45,6 +45,13 @@ function App() {
     updateLocalOrder,
     addOrder
   } = useOrders(user);
+  const filteredOrders = useFilteredOrders({
+    orders,
+    search,
+    filterArea,
+    view,
+    user
+  });
   const {
     usuarios,
     setUsuarios,
@@ -131,51 +138,11 @@ function App() {
       if (remaining.length > 0) {
         setView("form");
       } else {
-        setView("kanban");
+        goToView("kanban");
       }
 
       return remaining;
     });
-  };
-
-  const filteredOrders = orders.filter(o => {
-    const s = search.toLowerCase();
-
-    const matchesSearch =
-      o.cliente?.toLowerCase().includes(s) ||
-      o.numero?.toLowerCase().includes(s) ||
-      o.trabajo?.toLowerCase().includes(s);
-
-    const matchesArea =
-      filterArea === "all" || o.area === filterArea;
-
-    const matchesUser =
-      view !== "misOrdenes" || o.asignado_a === user.id;
-
-    return matchesSearch && matchesArea && matchesUser;
-  });
-
-  const openOrderDetail = (order) => {
-
-    setSelectedOrder(order);
-
-    goToView("detail");
-
-    window.scrollTo(0, 0);
-  };
-
-  const openCuestionarioView = (order) => {
-
-    setSelectedOrder(order);
-
-    goToView("cuestionarioView");
-  };
-
-  const openConsultas = (order) => {
-
-    setSelectedOrder(order);
-
-    goToView("Consultas");
   };
 
   const openHistorial = (order) => {
@@ -192,11 +159,6 @@ function App() {
     goToView("cuestionario");
   };
 
-  const closeCuestionario = () => {
-    setHistory([]);
-    setView("kanban");
-  };
-
 
   return (
     <>
@@ -206,46 +168,43 @@ function App() {
         setPrefillQueue={setPrefillQueue}
         setCurrentPrefill={setCurrentPrefill}
         fetchOrders={fetchOrders}
-        setView={setView}
         selectO={setSelectedOrder}
         user={user}
         view={view} 
-        setView={setView} 
-        setPrev={goBack}
+        goToView={goToView} 
+        resetNavigation={resetNavigation}
         handleLogout={handleLogout}
       />
 
       <div className="view-container">
 
         {view === "kanban" && (
-          <Kanban 
-            orders={filteredOrders}
-            users={usuarios}
+          <KanbanView
+            filteredOrders={filteredOrders}
+            usuarios={usuarios}
             search={search}
             setSearch={setSearch}
             filterArea={filterArea}
             setFilterArea={setFilterArea}
-            onSelectOrder={openOrderDetail}
-            onOpenCuestionario={openCuestionarioView}
-            onOpenConsultas={openConsultas}
+            setSelectedOrder={setSelectedOrder}
+            goToView={goToView}
           />
         )}
 
         {view === "misOrdenes" && (
-          <ListView 
-            orders={filteredOrders}
-            onSelectOrder={openOrderDetail}
+          <OrdersListView
+            filteredOrders={filteredOrders}
             search={search}
             setSearch={setSearch}
             filterArea={filterArea}
             setFilterArea={setFilterArea}
-            onOpenCuestionario={openCuestionarioView}
-            onOpenConsultas={openConsultas}
+            setSelectedOrder={setSelectedOrder}
+            goToView={goToView}
           />
         )}
 
         {view === "detail" && selectedOrder && (
-          <OrderDetail 
+          <OrderDetail
             orderId={selectedOrder.id}
             orders={orders}
             onRefresh={fetchOrders}
@@ -268,15 +227,14 @@ function App() {
         )}
 
         {view === "list" && (
-          <ListView 
-            orders={filteredOrders}
-            onSelectOrder={openOrderDetail}
+          <OrdersListView
+            filteredOrders={filteredOrders}
             search={search}
             setSearch={setSearch}
             filterArea={filterArea}
             setFilterArea={setFilterArea}
-            onOpenCuestionario={openCuestionarioView}
-            onOpenConsultas={openConsultas}
+            setSelectedOrder={setSelectedOrder}
+            goToView={goToView}
           />
         )}
 

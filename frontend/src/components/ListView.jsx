@@ -118,7 +118,6 @@ function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFil
             padding: 12,
             marginBottom: 8,
             borderRadius: 6,
-            borderLeft: `3px solid ${PCOLORS[o.prioridad] || "#999"}`,
             cursor: "pointer",
             textAlign: "left"
           }}
@@ -137,24 +136,6 @@ function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFil
               {o.numero}
             </span>
 
-            <button
-              onClick={(e) => {
-                  e.stopPropagation(); // ⚠️ IMPORTANTE
-                  onOpenConsultas(o);
-                }}
-              style={{
-                background: "#1A1A1A",
-                color: "#777",
-                border: "1px solid #2A2A2A",
-                borderRadius: 6,
-                padding: "4px 8px",
-                cursor: "pointer",
-                fontSize: 12
-              }}
-              >
-                📋 consultas
-              </button>
-
             <span style={{
               fontSize: 10,
               padding: "2px 6px",
@@ -168,12 +149,23 @@ function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFil
               <span>{area?.icon}</span>
               <span>{area?.label}</span>
             </span>
+
+            <span style={{
+              fontSize: 10,
+              padding: "2px 6px",
+              borderRadius: 4,
+              background: (PCOLORS[o.prioridad] || "#999") + "22",
+              color: PCOLORS[o.prioridad] || "#999"
+            }}>
+              {o.prioridad}
+            </span>
           </div>
 
           {/* CLIENTE */}
           <div style={{
             fontWeight: "bold",
-            marginBottom: 4
+            marginBottom: 6,
+            marginTop: 6
           }}>
             {o.cliente}
           </div>
@@ -228,18 +220,26 @@ function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFil
                   fontSize: 12
                 }}
                 >
-                  📋 cuestionario
+                  📋 detalles
                 </button>
 
-            <span style={{
-              fontSize: 10,
-              padding: "2px 6px",
-              borderRadius: 4,
-              background: (PCOLORS[o.prioridad] || "#999") + "22",
-              color: PCOLORS[o.prioridad] || "#999"
-            }}>
-              {o.prioridad}
-            </span>
+                <button
+              onClick={(e) => {
+                  e.stopPropagation(); // ⚠️ IMPORTANTE
+                  onOpenConsultas(o);
+                }}
+              style={{
+                background: "#1A1A1A",
+                color: "#777",
+                border: "1px solid #2A2A2A",
+                borderRadius: 6,
+                padding: "4px 8px",
+                cursor: "pointer",
+                fontSize: 12
+              }}
+              >
+                📋 consultas
+              </button>
           </div>
 
         </div>

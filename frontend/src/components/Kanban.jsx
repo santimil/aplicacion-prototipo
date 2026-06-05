@@ -176,7 +176,6 @@ function Kanban({ orders, users, onSelectOrder, search, setSearch, filterArea, s
                     background: "#161616",
                     padding: 12,
                     marginBottom: 8,
-                    borderLeft: `3px solid ${PCOLORS[o.prioridad] || "#999"}`,
                     borderRadius: 6,
                     cursor: "pointer"
                 }}
@@ -285,7 +284,7 @@ function Kanban({ orders, users, onSelectOrder, search, setSearch, filterArea, s
                         fontSize: 12
                       }}
                     >
-                      📋 cuestionario
+                      📋 detalles
                     </button>
 
                     <span style={{
