@@ -1,13 +1,28 @@
 import { useEffect, useState } from "react";
 import RespuestaBox from "./RespuestaBox";
+import {
+  getCardStyle,
+  getUserStyle,
+  getDateStyle,
+  getMessageStyle,
+  getResponseBoxStyle,
+  getResponseTextStyle
+} from "../../styles/styles";
 
 function ConsultaCard({
   consulta,
   isAdmin,
-  onSaveRespuesta
+  onSaveRespuesta, 
+  theme
 }) {
 
   const [showResponder, setShowResponder] = useState(false);
+  const cardStyle = getCardStyle(theme);
+  const userStyle = getUserStyle(theme);
+  const dateStyle = getDateStyle(theme);
+  const messageStyle = getMessageStyle(theme);
+  const responseBox = getResponseBoxStyle(theme);
+  const responseText = getResponseTextStyle(theme);
 
   return (
 
@@ -118,37 +133,11 @@ function ConsultaCard({
   );
 }
 
-const cardStyle = {
-  background: "#161616",
-  border: "1px solid #2A2A2A",
-  borderRadius: 14,
-  padding: 14,
-  marginBottom: 14
-};
-
 const headerStyle = {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
   marginBottom: 10
-};
-
-const userStyle = {
-  color: "#E8E0D0",
-  fontWeight: "bold",
-  fontSize: 14
-};
-
-const dateStyle = {
-  color: "#666",
-  fontSize: 11
-};
-
-const messageStyle = {
-  color: "#DDD",
-  lineHeight: 1.5,
-  marginBottom: 12,
-  whiteSpace: "pre-wrap"
 };
 
 const statusStyle = {
@@ -157,23 +146,10 @@ const statusStyle = {
   marginBottom: 10
 };
 
-const responseBox = {
-  marginTop: 10,
-  padding: 10,
-  borderRadius: 10,
-  background: "#111",
-  border: "1px solid #2A2A2A"
-};
-
 const responseLabel = {
   color: "#FFB74D",
   fontSize: 12,
   marginBottom: 6
-};
-
-const responseText = {
-  color: "#E8E0D0",
-  lineHeight: 1.4
 };
 
 const replyButton = {

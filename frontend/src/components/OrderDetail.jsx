@@ -15,7 +15,8 @@ import { getHistorial } from "../services/api"
 import { useOrderDetail } from "../hooks/useOrderDetail";
 import OrderDetailView from "../views/OrderDetailView";
 
-function OrderDetail({ orderId, orders, onRefresh, onBack, onMove, onUpdate, onOpenHistorial, users, user, handleControl }) {
+function OrderDetail({ orderId, orders, onRefresh, onBack, onMove, onUpdate, onOpenHistorial, 
+  users, user, handleControl, theme, darkMode, setDarkMode }) {
 
   const order = orders.find(o => o.id === orderId);
 
@@ -106,6 +107,10 @@ function OrderDetail({ orderId, orders, onRefresh, onBack, onMove, onUpdate, onO
       getUserName={getUserName}
 
       exportToExcel={exportToExcel}
+
+      theme={theme}
+      darkMode={darkMode}
+      setDarkMode={setDarkMode}
     />
   );
 }

@@ -7,6 +7,13 @@ import {
 import {
   AREAS
 } from "../constant/orderConstants";
+import {
+  getActionButton,
+  getInputStyle,
+  getSelectStyle,
+  getSecondaryButton
+} from "../styles/styles";
+
 
 function OrderDetailView({ order,
       form,
@@ -34,16 +41,35 @@ function OrderDetailView({ order,
       onOpenHistorial,
       handleControl,
       getUserName,
-      exportToExcel }) {
+      exportToExcel, 
+      theme, 
+      darkMode, 
+      setDarkMode }) {
 
+    const inputStyle = getInputStyle(theme);
+    const selectStyle = getSelectStyle(theme);
+    const actionButton = getActionButton(theme);
+    const secondaryButton = getSecondaryButton(theme);
+
+    const excelButton = {
+      ...actionButton,
+      border: "1px solid #2e7d32",
+      color: darkMode ? "#A5D6A7" : "#2e7d32"
+    };
+
+    const pdfButton = {
+      ...actionButton,
+      border: "1px solid #c62828",
+      color: darkMode ? "#EF9A9A" : "#c62828"
+    };
 
     console.log("order:", order);
 
   return (
     <div style={{
       minHeight: "100vh",
-      background: "#0D0D0D",
-      color: "#E8E0D0",
+      background: theme.background,
+      color: theme.text,
       padding: 16,
       paddingBottom: 80,
       fontFamily: "monospace"
@@ -55,9 +81,9 @@ function OrderDetailView({ order,
         style={{
           marginBottom: 20,
           padding: "8px 14px",
-          background: "#1A1A1A",
-          color: "#888",
-          border: "1px solid #2A2A2A",
+          background: theme.surface,
+          color: theme.secondaryText,
+          border: `1px solid ${theme.border}`,
           borderRadius: 6,
           cursor: "pointer"
         }}
@@ -67,8 +93,8 @@ function OrderDetailView({ order,
 
       {/* CARD PRINCIPAL */}
       <div style={{
-        background: "#161616",
-        border: "1px solid #2A2A2A",
+        background: theme.card,
+        border: `1px solid ${theme.border}`,
         borderRadius: 8,
         padding: 16
       }}>
@@ -123,15 +149,15 @@ function OrderDetailView({ order,
 
         {/* TRABAJO */}
         <div style={{
-          background: "#0D0D0D",
+          background: theme.background,
+          borderLeft: `3px solid ${theme.border}`,
           padding: 12,
           borderRadius: 6,
-          marginBottom: 16,
-          borderLeft: "3px solid #2A2A2A"
+          marginBottom: 16
         }}>
           <div style={{
             fontSize: 11,
-            color: "#666",
+            color: theme.secondaryText,
             marginBottom: 6
           }}>
             TRABAJO
@@ -169,11 +195,11 @@ function OrderDetailView({ order,
         }}>
 
           <div style={{
-            background: "#0D0D0D",
+            background: theme.background,
             padding: 10,
             borderRadius: 6
           }}>
-            <div style={{ fontSize: 11, color: "#666" }}>
+            <div style={{ fontSize: 11, color: theme.secondaryText }}>
               ÁREA
             </div>
             <div>
@@ -198,11 +224,11 @@ function OrderDetailView({ order,
           </div>
 
           <div style={{
-            background: "#0D0D0D",
+            background: theme.background,
             padding: 10,
             borderRadius: 6
           }}>
-            <div style={{ fontSize: 11, color: "#666" }}>
+            <div style={{ fontSize: 11, color: theme.secondaryText }}>
               PRIORIDAD
             </div>
             <div style={{
@@ -230,11 +256,11 @@ function OrderDetailView({ order,
           </div>
 
           <div style={{
-            background: "#0D0D0D",
+            background: theme.background,
             padding: 10,
             borderRadius: 6
           }}>
-            <div style={{ fontSize: 11, color: "#666" }}>
+            <div style={{ fontSize: 11, color: theme.secondaryText }}>
               FECHA DE INGRESO
             </div>
             <div>
@@ -243,11 +269,11 @@ function OrderDetailView({ order,
           </div>
 
           <div style={{
-            background: "#0D0D0D",
+            background: theme.background,
             padding: 10,
             borderRadius: 6
           }}>
-            <div style={{ fontSize: 11, color: "#666" }}>
+            <div style={{ fontSize: 11, color: theme.secondaryText }}>
               ENTREGADO EL
             </div>
 
@@ -261,16 +287,16 @@ function OrderDetailView({ order,
           </div>
 
           <div style={{
-            background: "#0D0D0D",
+            background: theme.background,
             padding: 10,
             borderRadius: 6
           }}>
-            <div style={{ fontSize: 11, color: "#666" }}>
+            <div style={{ fontSize: 11, color: theme.secondaryText }}>
               FECHA DE ENTREGA
             </div>
             <div>
               <span style={{
-                color: isOverdue(order) ? "#FF5252" : "#E8E0D0"
+                color: isOverdue(order) ? "#FF5252" : theme.text
                 }}>
                 {formatDate(order.fecha_entrega)}
                 {isOverdue(order) && " ⚠"}
@@ -279,11 +305,11 @@ function OrderDetailView({ order,
           </div>
 
           <div style={{
-            background: "#0D0D0D",
+            background: theme.background,
             padding: 10,
             borderRadius: 6
           }}>
-            <div style={{ fontSize: 11, color: "#666" }}>
+            <div style={{ fontSize: 11, color: theme.secondaryText }}>
               DIAS ASIGNADOS
             </div>
             <div>
@@ -325,11 +351,11 @@ function OrderDetailView({ order,
           </div>
 
           <div style={{
-            background: "#0D0D0D",
+            background: theme.background,
             padding: 10,
             borderRadius: 6
           }}>
-            <div style={{ fontSize: 11, color: "#666" }}>
+            <div style={{ fontSize: 11, color: theme.secondaryText }}>
               CREADO EL
             </div>
             <div>
@@ -338,11 +364,11 @@ function OrderDetailView({ order,
           </div>
 
           <div style={{
-            background: "#0D0D0D",
+            background: theme.background,
             padding: 10,
             borderRadius: 6
           }}>
-            <div style={{ fontSize: 11, color: "#666" }}>
+            <div style={{ fontSize: 11, color: theme.secondaryText }}>
               CREADO POR
             </div>
             <div>
@@ -351,11 +377,11 @@ function OrderDetailView({ order,
           </div>
 
           <div style={{
-            background: "#0D0D0D",
+            background: theme.background,
             padding: 10,
             borderRadius: 6
           }}>
-            <div style={{ fontSize: 11, color: "#666" }}>
+            <div style={{ fontSize: 11, color: theme.secondaryText }}>
               ASIGNADO A
             </div>
             {isEditing ? (
@@ -384,16 +410,16 @@ function OrderDetailView({ order,
 
         {/* NOTAS */}
         <div style={{
-          background: "#0D0D0D",
+          background: theme.background,
+          borderLeft: `3px solid ${theme.border}`,
           padding: 12,
           borderRadius: 6,
           marginTop: 16,
-          marginBottom: 16,
-          borderLeft: "3px solid #2A2A2A"
+          marginBottom: 16
         }}>
           <div style={{
             fontSize: 11,
-            color: "#666",
+            color: theme.secondaryText,
             marginBottom: 6
           }}>
             NOTAS
@@ -421,7 +447,7 @@ function OrderDetailView({ order,
             {!isIneditable &&(
             <><div style={{
                 fontSize: 11,
-                color: "#666",
+                color: theme.secondaryText,
                 marginBottom: 8
               }}>
                 MOVER A ÁREA
@@ -447,8 +473,8 @@ function OrderDetailView({ order,
                           padding: "8px 12px",
                           borderRadius: 6,
                           border: `1px solid ${isCurrent ? area.color : "#2A2A2A"}`,
-                          background: isCurrent ? area.color : "#1A1A1A",
-                          color: isCurrent ? "#0D0D0D" : "#666",
+                          background: isCurrent ? area.color : theme.background,
+                          color: isCurrent ? "#0D0D0D" : theme.secondaryText,
                           cursor: "pointer",
                           fontSize: 12,
                           fontWeight: isCurrent ? "bold" : "normal"
@@ -467,13 +493,9 @@ function OrderDetailView({ order,
                   onOpenHistorial(order);
                }}
                style={{
-                background: "#1A1A1A",
-                color: "#777",
-                border: "1px solid #2A2A2A",
-                borderRadius: 6,
+                ...secondaryButton,
                 marginTop: "18px",
                 padding: "4px 8px",
-                cursor: "pointer",
                 fontSize: 18
                }}>
                 📖 historial
@@ -483,13 +505,9 @@ function OrderDetailView({ order,
                  <button
                    onClick={handleSendToControl}
                    style={{
-                     background: "#1A1A1A",
-                     color: "#777",
-                     border: "1px solid #2A2A2A",
-                     borderRadius: 6,
+                     ...secondaryButton,
                      marginTop: "18px",
                      padding: "4px 8px",
-                     cursor: "pointer",
                      fontSize: 18
                    }}
                  >
@@ -500,13 +518,9 @@ function OrderDetailView({ order,
                {areaActual === "control" && (
                  <button onClick={() => handleControl(order.id)}
                  style={{
-                     background: "#1A1A1A",
-                     color: "#777",
-                     border: "1px solid #2A2A2A",
-                     borderRadius: 6,
+                     ...secondaryButton,
                      marginTop: "18px",
                      padding: "4px 8px",
-                     cursor: "pointer",
                      fontSize: 18
                    }}
                   >
@@ -520,13 +534,10 @@ function OrderDetailView({ order,
                     <button
                       onClick={handleEntregar}
                       style={{
-                        background: "#1A1A1A",
+                        ...secondaryButton,
                         color: "#81C784",
-                        border: "1px solid #2A2A2A",
-                        borderRadius: 6,
                         marginTop: "18px",
                         padding: "4px 8px",
-                        cursor: "pointer",
                         fontSize: 18
                       }}
                     >
@@ -550,9 +561,9 @@ function OrderDetailView({ order,
                     width: "100%",
                     padding: "14px",
                     borderRadius: 10,
-                    border: "1px solid #2A2A2A",
-                    background: "#161616",
-                    color: "#E8E0D0",
+                    background: theme.card,
+                    color: theme.text,
+                    border: `1px solid ${theme.border}`,
                     fontSize: 14,
                     letterSpacing: 1,
                     cursor: "pointer",
@@ -571,8 +582,10 @@ function OrderDetailView({ order,
                     width: 48,
                     height: 48,
                     borderRadius: 10,
-                    border: "1px solid #3A1F1F",
-                    background: "#161616",
+                    background: theme.card,
+                    border: darkMode
+                      ? "1px solid #3A1F1F"
+                      : "1px solid #FFB3B3",
                     color: "#FF5252",
                     cursor: "pointer",
                     display: "flex",
@@ -618,12 +631,10 @@ function OrderDetailView({ order,
                       setForm(order);
                     }}
                     style={{
+                      ...actionButton,
                       flex: 1,
                       padding: "14px",
                       borderRadius: 10,
-                      border: "1px solid #2A2A2A",
-                      background: "#161616",
-                      color: "#888",
                       cursor: "pointer"
                     }}
                   >
@@ -679,12 +690,12 @@ function OrderDetailView({ order,
         }}>
 
           <div style={{
-            background: "#161616",
+            background: theme.card,
+            border: `1px solid ${theme.border}`,
             padding: 20,
             borderRadius: 10,
             width: "85%",
-            maxWidth: 320,
-            border: "1px solid #2A2A2A"
+            maxWidth: 320
           }}>
 
             {/* TÍTULO */}
@@ -699,7 +710,7 @@ function OrderDetailView({ order,
             {/* TEXTO */}
             <div style={{
               fontSize: 13,
-              color: "#888",
+              color: theme.secondaryText,
               marginBottom: 20
             }}>
               ¿Seguro que querés eliminar esta orden?
@@ -755,57 +766,5 @@ function OrderDetailView({ order,
     </div>   
   );
 }
-
-const inputStyle = {
-  width: "100%",
-  padding: "10px",
-  marginTop: 4,
-  background: "#111",
-  border: "1px solid #2A2A2A",
-  borderRadius: 6,
-  color: "#E8E0D0",
-  outline: "none",
-  boxSizing: "border-box"
-};
-
-const selectStyle = {
-  width: "100%",
-  padding: "8px",
-  background: "#1A1A1A",
-  color: "#E8E0D0",
-  border: "1px solid #2A2A2A",
-  borderRadius: 6,
-  fontSize: 12,
-  outline: "none",
-  cursor: "pointer"
-};
-
-const actionButton = {
-  flex: 1,
-  padding: "12px",
-  borderRadius: 10,
-  border: "1px solid #2A2A2A",
-  background: "#161616",
-  color: "#E8E0D0",
-  fontSize: 13,
-  cursor: "pointer",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: 6,
-  transition: "all 0.2s ease"
-};
-
-const excelButton = {
-  ...actionButton,
-  border: "1px solid #2e7d32",
-  color: "#A5D6A7"
-};
-
-const pdfButton = {
-  ...actionButton,
-  border: "1px solid #c62828",
-  color: "#EF9A9A"
-};
 
 export default OrderDetailView;

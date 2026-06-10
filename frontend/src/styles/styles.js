@@ -1,5 +1,153 @@
 // src/styles/styles.js
 
+
+export const getInputStyle = (theme) => ({
+  width: "100%",
+  padding: "10px",
+  marginTop: 4,
+  background: theme.surface,
+  border: `1px solid ${theme.border}`,
+  borderRadius: 6,
+  color: theme.text,
+  outline: "none",
+  boxSizing: "border-box"
+});
+
+export const getSelectStyle = (theme) => ({
+  width: "100%",
+  padding: "8px",
+  background: theme.surface,
+  color: theme.text,
+  border: `1px solid ${theme.border}`,
+  borderRadius: 6,
+  fontSize: 12,
+  outline: "none",
+  cursor: "pointer"
+});
+
+export const getActionButton = (theme) => ({
+  flex: 1,
+  padding: "12px",
+  borderRadius: 10,
+  border: `1px solid ${theme.border}`,
+  background: theme.card,
+  color: theme.text,
+  fontSize: 13,
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 6,
+  transition: "all 0.2s ease"
+});
+
+export const getSecondaryButton = (theme) => ({
+  background: theme.card,
+  color: theme.secondaryText,
+  border: `3px solid ${theme.border}`,
+  borderRadius: 6,
+  cursor: "pointer"
+});
+
+export const getModalStyle = (theme) => ({
+  background: theme.card,
+  color: theme.text,
+
+  border: `1px solid ${theme.border}`,
+  borderRadius: 12,
+
+  padding: 20,
+
+  width: "90%",
+  maxWidth: "900px",
+
+  maxHeight: "90vh",
+  overflowY: "auto"
+});
+
+export const getCardStyle = (theme) => ({
+  background: theme.surface,
+  color: theme.text,
+  border: `1px solid ${theme.border}`,
+  padding: 12,
+  margin: 12,
+  borderRadius: 8
+});
+
+export const getLabelStyle = (theme) => ({
+  color: theme.text,
+  borderTop: `2px solid ${theme.border}`,
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+  marginTop: 22,
+  padding: 6,
+  fontSize: 13,
+});
+
+export const getUserStyle = (theme) => ({
+  color: theme.text,
+  fontWeight: "bold",
+  fontSize: 14
+});
+
+export const getDateStyle = (theme) => ({
+  color: theme.secondaryText,
+  fontSize: 11
+});
+
+export const getMessageStyle = (theme) => ({
+  color: theme.text,
+  lineHeight: 1.5,
+  marginBottom: 12,
+  whiteSpace: "pre-wrap"
+});
+
+export const getResponseBoxStyle = (theme) => ({
+  marginTop: 10,
+  padding: 10,
+  borderRadius: 10,
+  background: theme.surface,
+  border: `1px solid ${theme.border}`
+});
+
+export const getResponseTextStyle = (theme) => ({
+  color: theme.text,
+  lineHeight: 1.4
+});
+
+
+export const historialOverlay = {
+  position: "fixed",
+  inset: 0,
+  background: "rgba(0,0,0,0.9)",
+  zIndex: 200,
+  display: "flex",
+  alignItems: "flex-end"
+};
+
+export const getHistorialItemStyle = (theme) => ({
+  padding: "10px 0",
+  borderBottom: `1px solid ${theme.border}`
+});
+
+export const getHistorialButtonStyle = (theme) => ({
+  marginTop: 15,
+  width: "100%",
+  padding: "12px",
+  borderRadius: 8,
+  background: theme.surface,
+  color: theme.text,
+  border: `1px solid ${theme.border}`,
+  cursor: "pointer"
+});
+
+
+
+
+
+
+
 export const colors = {
   background: "#111",
   backgroundLight: "#161616",

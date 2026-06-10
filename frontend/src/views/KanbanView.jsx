@@ -8,7 +8,8 @@ function KanbanView({
   filterArea,
   setFilterArea,
   setSelectedOrder,
-  goToView
+  goToView,
+  theme, darkMode, setDarkMode
 }) {
 
   const openOrderDetail = (order) => {
@@ -45,6 +46,9 @@ function KanbanView({
       onSelectOrder={openOrderDetail}
       onOpenCuestionario={openCuestionarioView}
       onOpenConsultas={openConsultas}
+      theme={theme}
+      darkMode={darkMode}
+      setDarkMode={setDarkMode}
     />
   );
 }

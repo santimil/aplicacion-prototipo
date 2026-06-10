@@ -18,6 +18,7 @@ import { useControl } from "./hooks/useControl";
 import { useUsers } from "./hooks/useUsers";
 import { useNavigation } from "./hooks/useNavigation";
 import { useFilteredOrders } from "./hooks/useFilteredOrders";
+import { THEMES } from "./constant/themeConstants";
 
 function App() {
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -68,6 +69,12 @@ function App() {
     setSelectedOrder,
     updateLocalOrder
   });
+
+  const [darkMode, setDarkMode] = useState(false);
+
+  const theme = darkMode
+    ? THEMES.dark
+    : THEMES.light;
 
   if (loadingSession) {
     return <div>Cargando...</div>;
@@ -162,9 +169,16 @@ function App() {
 
   return (
     <>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: theme.background,
+        color: theme.text
+      }}
+    >
       <Header 
         orders={orders}
-        onNewOrder={() => setView("form")}
+        onNewOrder={() => goToView("form")}
         setPrefillQueue={setPrefillQueue}
         setCurrentPrefill={setCurrentPrefill}
         fetchOrders={fetchOrders}
@@ -174,6 +188,9 @@ function App() {
         goToView={goToView} 
         resetNavigation={resetNavigation}
         handleLogout={handleLogout}
+        theme={theme}
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
       />
 
       <div className="view-container">
@@ -188,6 +205,9 @@ function App() {
             setFilterArea={setFilterArea}
             setSelectedOrder={setSelectedOrder}
             goToView={goToView}
+            theme={theme}
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
           />
         )}
 
@@ -200,6 +220,9 @@ function App() {
             setFilterArea={setFilterArea}
             setSelectedOrder={setSelectedOrder}
             goToView={goToView}
+            theme={theme}
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
           />
         )}
 
@@ -215,6 +238,9 @@ function App() {
             users={usuarios}
             user={user}
             handleControl={handleControl}
+            theme={theme}
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
           />
         )}
 
@@ -223,6 +249,7 @@ function App() {
             prefill={currentPrefill}
             onCreate={handleCreateOrder}
             onCancel={goBack}
+            theme={theme}
           />
         )}
 
@@ -235,6 +262,9 @@ function App() {
             setFilterArea={setFilterArea}
             setSelectedOrder={setSelectedOrder}
             goToView={goToView}
+            theme={theme}
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
           />
         )}
 
@@ -243,6 +273,7 @@ function App() {
             order={selectedOrder}
             onClose={goBack}
             onEdit={openCuestionarioEdit}
+            theme={theme}
           />
         )}
 
@@ -251,6 +282,7 @@ function App() {
             order={selectedOrder}
             onClose={() => resetNavigation("kanban")}
             onSaveLocal={handleUpdateCuestionario}
+            theme={theme}
           />
         )}
 
@@ -258,6 +290,7 @@ function App() {
           <HistorialView
             order={selectedOrder}
             onClose={goBack}
+            theme={theme}
           />
         )}
 
@@ -266,6 +299,7 @@ function App() {
             order={selectedOrder}
             user={user}
             onClose={goBack}
+            theme={theme}
           />
         )}
 
@@ -281,12 +315,19 @@ function App() {
             handleReject={() =>
               handleRevisionControl(control.id, "rechazar")
             }
+            theme={theme}
           />
         )}
 
       </div>
 
-      <BottomNav style={{ margintop: 10 }} view={view} view={view} goToView={goToView}/>
+      <BottomNav style={{ marginTop: 10 }} 
+        view={view} 
+        goToView={goToView} 
+        theme={theme}
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}/>
+      </div>
     </>
   );
 }

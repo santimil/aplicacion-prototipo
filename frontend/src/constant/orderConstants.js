@@ -12,7 +12,7 @@ export const AREAS = [
   { id: "soldadura", label: "Soldadura", icon: "⚡", color: "#EF9A9A" },
   { id: "pulido", label: "Pulido", icon: "◎", color: "#80CBC4" },
   { id: "pintura", label: "Pintura", icon: "◉", color: "#A5D6A7" },
-  { id: "armado", label: "Armado/Ductos", icon: "⬡", color: "#FFF176" },
+  { id: "armado", label: "Armado/Ductos", icon: "⬡", color: "#a63c06" },
   { id: "control", label: "Control", icon: "🗒️", color: "#DA7422" },
   { id: "entrega", label: "Entrega", icon: "🛻", color: "#3CF000" }
 ];
@@ -24,5 +24,5 @@ export const MOVIMIENTO = [
   { id: "soldadura", label: "Soldadura", icon: "⚡", color: "#EF9A9A" },
   { id: "pulido", label: "Pulido", icon: "◎", color: "#80CBC4" },
   { id: "pintura", label: "Pintura", icon: "◉", color: "#A5D6A7" },
-  { id: "armado", label: "Armado/Ductos", icon: "⬡", color: "#FFF176" }
+  { id: "armado", label: "Armado/Ductos", icon: "⬡", color: "#a63c06" }
 ];

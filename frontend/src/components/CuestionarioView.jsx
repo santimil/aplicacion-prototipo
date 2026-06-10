@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { getPlanos } from "../services/api";
-import { overlay, modal, cardStyle, dividerStyle, 
+import { overlay, getModalStyle, getCardStyle, getActionButton, dividerStyle, 
   chipStyle, primaryLinkButton, sectionTitleStyle } from "../styles/styles";
 
-function CuestionarioView({ order, onClose, onEdit }) {
+function CuestionarioView({ order, onClose, onEdit, theme }) {
 
   const [cuestionario, setCuestionario] = useState(null);
   const [planos, setPlanos] = useState([]);
@@ -47,10 +47,14 @@ function CuestionarioView({ order, onClose, onEdit }) {
 
   }, [planos]);
 
+  const modalStyle = getModalStyle(theme);
+  const cardStyleTheme = getCardStyle(theme);
+  const actionButton = getActionButton(theme);
+
   if (!cuestionario) {
     return (
       <div style={overlay}>
-        <div style={modal}>
+        <div style={modalStyle}>
           <p style={{ color: "#666" }}>Sin datos de cuestionario</p>
           <button onClick={onClose}>Cerrar</button>
         </div>
@@ -72,13 +76,13 @@ function CuestionarioView({ order, onClose, onEdit }) {
     return (
       <div
         style={{
-          ...cardStyle,
+          ...cardStyleTheme,
           marginBottom: 12
         }}
       >
         <div
           style={{
-            color: "#777",
+            color: theme.secondaryText,
             fontSize: 11,
             marginBottom: 4,
             textTransform: "uppercase",
@@ -90,7 +94,7 @@ function CuestionarioView({ order, onClose, onEdit }) {
 
         <div
           style={{
-            color: "#E8E0D0",
+            color: theme.text,
             fontSize: 14,
             wordBreak: "break-word"
           }}
@@ -103,7 +107,7 @@ function CuestionarioView({ order, onClose, onEdit }) {
 
   return (
     <div style={overlay}>
-      <div style={modal}>
+      <div style={modalStyle}>
 
         <h3 style={{ color: "#FFB74D" }}>
           📋 Detalles - {order.numero}
@@ -170,12 +174,14 @@ function CuestionarioView({ order, onClose, onEdit }) {
                   background:
                     selectedPlano?.id === plano.id
                       ? "#FFB74D"
-                      : "#1A1A1A",
+                      : theme.card,
 
                   color:
                     selectedPlano?.id === plano.id
                       ? "#111"
-                      : "#E8E0D0"
+                      : theme.text,
+
+                  border: `1px solid ${theme.border}`
                 }}
               >
                 📎 {plano.nombre}
@@ -192,7 +198,7 @@ function CuestionarioView({ order, onClose, onEdit }) {
 
             <div
               style={{
-                ...cardStyle,
+                ...cardStyleTheme,
                 marginTop: 12,
                 boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
                 overflow: "hidden"
@@ -223,7 +229,7 @@ function CuestionarioView({ order, onClose, onEdit }) {
 
                   <div
                     style={{
-                      color: "#E8E0D0",
+                      color: theme.text,
                       fontSize: 13,
                       textAlign: "center",
                       wordBreak: "break-word"
@@ -288,20 +294,5 @@ function CuestionarioView({ order, onClose, onEdit }) {
     </div>
   );
 }
-
-const actionButton = {
-  flex: 1,
-  padding: "14px",
-  borderRadius: 12,
-  border: "1px solid #2A2A2A",
-  background: "#161616",
-  color: "#E8E0D0",
-  fontSize: 14,
-  cursor: "pointer",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: 8
-};
 
 export default CuestionarioView;

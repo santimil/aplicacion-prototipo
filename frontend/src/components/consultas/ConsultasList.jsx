@@ -3,7 +3,8 @@ import ConsultaCard from "./ConsultaCard";
 function ConsultasList({
   consultas,
   isAdmin,
-  onResponder
+  onResponder, 
+  theme
 }) {
 
   return (
@@ -15,6 +16,7 @@ function ConsultasList({
           consulta={c}
           isAdmin={isAdmin}
           onSaveRespuesta={onResponder}
+          theme={theme}
         />
 
       ))}

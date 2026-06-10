@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
-export default function ControlDetail({ control, setView, onUpdateCheck, handleSentToEntrega, handleReject }) {
+export default function ControlDetail({ control, setView, onUpdateCheck, handleSentToEntrega, 
+  handleReject, theme }) {
 
   const [observaciones, setObservaciones] = useState({});
 
@@ -31,8 +32,8 @@ export default function ControlDetail({ control, setView, onUpdateCheck, handleS
   return (
     <div style={{
       minHeight: "100vh",
-      background: "#0D0D0D",
-      color: "#E8E0D0",
+      background: theme.background,
+      color: theme.text,
       padding: 16,
       paddingBottom: 80
     }}>
@@ -49,7 +50,7 @@ export default function ControlDetail({ control, setView, onUpdateCheck, handleS
           style={{
             background: "transparent",
             border: "none",
-            color: "#888",
+            color: theme.secondaryText,
             cursor: "pointer",
             fontSize: 14
           }}
@@ -69,8 +70,8 @@ export default function ControlDetail({ control, setView, onUpdateCheck, handleS
 
       {/* INFO CONTROL */}
       <div style={{
-        background: "#161616",
-        border: "1px solid #2A2A2A",
+        background: theme.card,
+        border: `1px solid ${theme.border}`,
         borderRadius: 12,
         padding: 16,
         marginBottom: 20
@@ -103,8 +104,8 @@ export default function ControlDetail({ control, setView, onUpdateCheck, handleS
             <div
               key={check.id}
               style={{
-                background: "#161616",
-                border: "1px solid #2A2A2A",
+                background: theme.card,
+                border: `1px solid ${theme.border}`,
                 borderRadius: 12,
                 padding: 14
               }}
@@ -204,15 +205,16 @@ export default function ControlDetail({ control, setView, onUpdateCheck, handleS
                 }
                 placeholder="Observaciones..."
                 style={{
-                    width: "100%",
-                    marginTop: 8,
-                    borderRadius: 8,
-                    background: "#1A1A1A",
-                    border: "1px solid #333",
-                    color: "#E8E0D0",
-                    padding: 8,
-                    resize: "vertical",
-                    minHeight: 60
+                  width: "100%",
+                  marginTop: 8,
+                  borderRadius: 8,
+                  background: theme.surface,
+                  border: `1px solid ${theme.border}`,
+                  color: theme.text,
+                  padding: 8,
+                  resize: "vertical",
+                  minHeight: 60,
+                  boxSizing: "border-box"
                 }}
                 />
 

@@ -7,7 +7,8 @@ function OrdersListView({
   filterArea,
   setFilterArea,
   setSelectedOrder,
-  goToView
+  goToView, 
+  theme, darkMode, setDarkMode
 }) {
 
   const openOrderDetail = (order) => {
@@ -38,6 +39,9 @@ function OrdersListView({
       setFilterArea={setFilterArea}
       onOpenCuestionario={openCuestionarioView}
       onOpenConsultas={openConsultas}
+      theme={theme}
+      darkMode={darkMode}
+      setDarkMode={setDarkMode}
     />
   );
 }

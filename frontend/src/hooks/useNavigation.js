@@ -14,13 +14,19 @@ export function useNavigation() {
 
   const goBack = () => {
 
+    console.log("goBack ejecutado");
+
     setHistory(prev => {
+
+      console.log("history:", prev);
 
       if (prev.length === 0) return prev;
 
       const newHistory = [...prev];
 
       const previousView = newHistory.pop();
+
+      console.log("previousView:", previousView);
 
       setView(previousView);
 

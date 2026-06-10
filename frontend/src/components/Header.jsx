@@ -3,7 +3,8 @@ import { useNotifications } from "../hooks/useNotifications";
 import { useMenu } from "../hooks/useMenu";
 import { useOCR } from "../hooks/useOCR";
 
-function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchOrders, selectO, user, view, goToView, resetNavigation, handleLogout }) {
+function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchOrders, selectO, 
+  user, view, goToView, resetNavigation, handleLogout, theme, darkMode, setDarkMode }) {
 
   const cameraRef = useRef();
   const fileRef = useRef();
@@ -50,8 +51,8 @@ function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchO
       position: "sticky",
       top: 0,
       zIndex: 50,
-      background: "#111",
-      borderBottom: "1px solid #1E1E1E",
+      background: theme.surface,
+      borderBottom: `1px solid ${theme.border}`,
       padding: "12px 16px",
       display: "flex",
       alignItems: "center",
@@ -101,7 +102,7 @@ function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchO
           onClick={() => cameraRef.current.click()}
           style={{
             padding: "8px 8px",
-            background: "#1A1A1A",
+            background: theme.surface,
             color: "#FFB74D",
             border: "1px solid #FFB74D55",
             borderRadius: 8,
@@ -117,7 +118,7 @@ function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchO
           onClick={() => fileRef.current.click()}
           style={{
             padding: "8px 8px",
-            background: "#1A1A1A",
+            background: theme.surface,
             color: "#80CBC4",
             border: "1px solid #80CBC455",
             borderRadius: 8,
@@ -153,7 +154,7 @@ function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchO
               fontSize: 20,
               background: "transparent",
               border: "none",
-              color: "#E8E0D0",
+              color: theme.text,
               cursor: "pointer"
             }}
           >
@@ -183,14 +184,17 @@ function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchO
               width: "260px",
               maxHeight: "300px", // 🔥 clave
               overflowY: "auto",  // 🔥 scroll vertical
-              background: "#2b2b2b",
+              background: theme.surface,
+              color: theme.text,
+              border: `1px solid ${theme.border}`,
               borderRadius: "12px",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+              boxShadow:
+              "0 8px 25px rgba(0,0,0,0.15)",
               padding: "10px",
               zIndex: 9999,
             }}>
               
-              <button style={menuItemStyle} onClick={() => setShowNotifications(prev => !prev)}>
+              <button style={menuItemStyle(theme)} onClick={() => setShowNotifications(prev => !prev)}>
                 🔔 Notificaciones ({unreadCount})
               </button>
 
@@ -199,7 +203,7 @@ function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchO
                   marginTop: 10,
                   maxHeight: "200px",
                   overflowY: "auto",
-                  borderTop: "1px solid #444",
+                  borderTop: `1px solid ${theme.border}`,
                   paddingTop: 10
                 }}>
                   {notifications.length === 0 ? (
@@ -234,13 +238,22 @@ function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchO
               {/* MIS ÓRDENES */}
                 <button
                   onClick={() => resetNavigation("misOrdenes")}
-                  style={menuItemStyle}
+                  style={menuItemStyle(theme)}
                 >
                   <span style={{ fontSize: 20 }}>👤</span>
                   Mis ordenes
                 </button>
 
-              <button style={menuItemStyle} onClick={handleLogout}>
+              <button
+                style={menuItemStyle(theme)}
+                onClick={() => setDarkMode(prev => !prev)}
+              >
+                {darkMode
+                  ? "☀️ Modo claro"
+                  : "🌙 Modo oscuro"}
+              </button>
+
+              <button style={menuItemStyle(theme)} onClick={handleLogout}>
                 🚪 Logout
               </button>
 
@@ -256,7 +269,7 @@ function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchO
         onClick={() => closeModeSelector()}>
           <div 
           onClick={(e) => e.stopPropagation()}
-          style={modalStyle}>
+          style={modalStyle(theme)}>
             
             <h3 style={{ marginBottom: 10 }}>
               Se detectaron <span style={{ color: "#f5a742" }}>{pendingFiles.length}</span> órdenes
@@ -344,26 +357,26 @@ const overlayStyle = {
   zIndex: 1000
 };
 
-const modalStyle = {
-  background: "#2b2b2b",
+const modalStyle = (theme) => ({
+  background: theme.surface,
   padding: "24px",
   borderRadius: "12px",
-  color: "#E8E0D0",
+  color: theme.text,
   width: "320px",
   maxWidth: "90%",
   textAlign: "center",
   boxShadow: "0 10px 30px rgba(0,0,0,0.5)"
-};
+});
 
-const menuItemStyle = {
+const menuItemStyle = (theme) => ({
   width: "100%",
   padding: "10px",
   border: "none",
-  background: "transparent",
-  color: "#E8E0D0",
+  background: theme.surface,
+  color: theme.text,
   textAlign: "left",
   cursor: "pointer",
   borderRadius: "8px"
-};
+});
 
 export default Header;

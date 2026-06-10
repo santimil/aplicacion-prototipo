@@ -81,6 +81,18 @@ export function useNotifications({
     fetchNotifications();
   }, []);
 
+  useEffect(() => {
+
+    fetchNotifications();
+
+    const interval = setInterval(() => {
+      fetchNotifications();
+    }, 15000); // 30 segundos
+
+    return () => clearInterval(interval);
+
+  }, []);
+
   return {
     notifications,
     unreadCount,

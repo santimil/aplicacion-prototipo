@@ -1,24 +1,8 @@
 import React from "react";
-
-const AREAS = [
-  { id: "inicio", label: "Inicio", icon: "▶", color: "#4FC3F7" },
-  { id: "corte", label: "Corte", icon: "✂", color: "#FFB74D" },
-  { id: "plegado", label: "Plegado", icon: "⌐", color: "#CE93D8" },
-  { id: "soldadura", label: "Soldadura", icon: "⚡", color: "#EF9A9A" },
-  { id: "pulido", label: "Pulido", icon: "◎", color: "#80CBC4" },
-  { id: "pintura", label: "Pintura", icon: "◉", color: "#A5D6A7" },
-  { id: "armado", label: "Armado/Ductos", icon: "⬡", color: "#FFF176" },
-  { id: "control", label: "Control", icon: "🗒️", color: "#DA7422" },
-  { id: "entrega", label: "Entrega", icon: "🛻", color: "#3CF000" }
-];
-
-
-const PCOLORS = {
-  Baja: "#4FC3F7",
-  Media: "#FFB74D",
-  Alta: "#EF9A9A",
-  Urgente: "#FF5252"
-};
+import {
+  AREAS,
+  PCOLORS
+} from "../constant/orderConstants";
 
 function isOverdue(order) {
   if (!order.fecha_entrega) return false;
@@ -29,7 +13,8 @@ function getAreaData(areaId) {
   return AREAS.find(a => a.id === areaId);
 }
 
-function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFilterArea, onOpenCuestionario, onOpenConsultas }) {
+function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFilterArea, 
+  onOpenCuestionario, onOpenConsultas, theme, darkMode, setDarkMode }) {
   console.log("onOpenConsultas:", onOpenConsultas);
   
   return (
@@ -39,8 +24,8 @@ function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFil
         <div style={{
           display: "flex",
           alignItems: "center",
-          background: "#111",
-          border: "1px solid #2A2A2A",
+          background: theme.surface,
+          border: `1px solid ${theme.border}`,
           borderRadius: 6,
           padding: "8px 10px"
         }}>
@@ -55,7 +40,7 @@ function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFil
               background: "transparent",
               border: "none",
               outline: "none",
-              color: "#E8E0D0",
+              color: theme.text,
               width: "100%"
             }}
           />
@@ -76,8 +61,13 @@ function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFil
             padding: "6px 10px",
             borderRadius: 6,
             border: "1px solid",
-            background: filterArea === "all" ? "#E8E0D0" : "#1A1A1A",
-            color: filterArea === "all" ? "#0D0D0D" : "#666"
+            background: filterArea === "all"
+              ? theme.text
+              : theme.surface,
+
+            color: filterArea === "all"
+              ? theme.background
+              : theme.secondaryText
           }}
         >
           TODAS
@@ -91,8 +81,22 @@ function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFil
               padding: "6px 10px",
               borderRadius: 6,
               border: "1px solid",
-              background: filterArea === a.id ? a.color : "#1A1A1A",
-              color: filterArea === a.id ? "#0D0D0D" : "#666",
+              background:
+                filterArea === a.id
+                  ? a.color
+                  : theme.surface,
+
+              color:
+                filterArea === a.id
+                  ? "#000"
+                  : theme.text,
+
+              border:
+                `1px solid ${
+                  filterArea === a.id
+                    ? a.color
+                    : theme.border
+                }`,
               display: "flex",
               alignItems: "center",
               gap: 4,
@@ -114,7 +118,9 @@ function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFil
           key={o.id}
           onClick={() => onSelectOrder(o)}
           style={{
-            background: "#161616",
+            background: theme.card,
+            color: theme.text,
+            border: `1px solid ${theme.border}`,
             padding: 12,
             marginBottom: 8,
             borderRadius: 6,
@@ -131,7 +137,9 @@ function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFil
           }}>
             <span style={{
               fontSize: 11,
-              color: "#888"
+              color: darkMode
+                ? area.color
+                : theme.text
             }}>
               {o.numero}
             </span>
@@ -140,8 +148,9 @@ function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFil
               fontSize: 10,
               padding: "2px 6px",
               borderRadius: 4,
-              background: area ? area.color + "22" : "#1A1A1A",
-              color: area ? area.color : "#999",
+              background: area ? area.color + "22" : theme.surface,
+              border: area ? `1px solid ${area.color}55` : `1px solid ${theme.border}`,
+              color: darkMode ? area.color : theme.text,
               display: "flex",
               alignItems: "center",
               gap: 4
@@ -155,7 +164,9 @@ function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFil
               padding: "2px 6px",
               borderRadius: 4,
               background: (PCOLORS[o.prioridad] || "#999") + "22",
-              color: PCOLORS[o.prioridad] || "#999"
+              color: !darkMode
+                ? "#333"
+                : (PCOLORS[o.prioridad] || "#999")
             }}>
               {o.prioridad}
             </span>
@@ -173,7 +184,7 @@ function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFil
           {/* TRABAJO */}
           <div style={{
             fontSize: 12,
-            color: "#777",
+            color: theme.secondaryText,
             marginBottom: 8
           }}>
             {o.trabajo}
@@ -211,9 +222,9 @@ function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFil
                   onOpenCuestionario(o);
                 }}
                 style={{
-                  background: "#1A1A1A",
-                  color: "#777",
-                  border: "1px solid #2A2A2A",
+                  background: theme.surface,
+                  color: theme.secondaryText,
+                  border: `1px solid ${theme.border}`,
                   borderRadius: 6,
                   padding: "4px 8px",
                   cursor: "pointer",
@@ -229,9 +240,9 @@ function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFil
                   onOpenConsultas(o);
                 }}
               style={{
-                background: "#1A1A1A",
-                color: "#777",
-                border: "1px solid #2A2A2A",
+                background: theme.surface,
+                color: theme.secondaryText,
+                border: `1px solid ${theme.border}`,
                 borderRadius: 6,
                 padding: "4px 8px",
                 cursor: "pointer",

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { getHistorial } from "../services/api";
+import { getModalStyle, historialOverlay, getHistorialButtonStyle, getHistorialItemStyle } from "../styles/styles";
 
-function HistorialView({ order, onClose }) {
+function HistorialView({ order, onClose, theme }) {
 
   const [historial, setHistorial] = useState([]);
 
@@ -13,8 +14,12 @@ function HistorialView({ order, onClose }) {
     }
   }, [order]);
 
+  const modal = getModalStyle(theme);
+  const button = getHistorialButtonStyle(theme);
+  const item = getHistorialItemStyle(theme);
+
   return (
-    <div style={overlay}>
+    <div style={historialOverlay}>
       <div style={modal}>
 
         <h3 style={{ color: "#FFB74D" }}>
@@ -35,11 +40,11 @@ function HistorialView({ order, onClose }) {
         </h3>
 
         {historial.length === 0 ? (
-          <p style={{ color: "#666" }}>Sin movimientos</p>
+          <p style={{ color: theme.secondaryText }}>Sin movimientos</p>
         ) : (
           historial.map((h, i) => (
             <div key={i} style={item}>
-              <div style={{ fontSize: 11, color: "#666" }}>
+              <div style={{ fontSize: 11, color: theme.secondaryText }}>
                 {new Date(h.timestamp).toLocaleString("es-UY", {
                     timeZone: "America/Montevideo",
                     day: "2-digit",
@@ -50,9 +55,9 @@ function HistorialView({ order, onClose }) {
                 })}
               </div>
 
-              <div style={{ color: "#E8E0D0" }}>
+              <div style={{ color: theme.text }}>
                 <div>
-                    <span style={{ color: "#888" }}>{h.area_anterior}</span>
+                    <span style={{ color: theme.secondaryText }}>{h.area_anterior}</span>
                     {" → "}
                     <span style={{ color: "#FFB74D" }}>{h.area_nueva}</span>
                 </div>
@@ -60,7 +65,7 @@ function HistorialView({ order, onClose }) {
 
               <div style={{
                 fontSize: 12,
-                color: "#777",
+                color: theme.secondaryText,
                 marginTop: 4
               }}>
                 👷 {h.usuario?.nombre || "Sin usuario"}
@@ -77,40 +82,5 @@ function HistorialView({ order, onClose }) {
     </div>
   );
 }
-
-const overlay = {
-  position: "fixed",
-  inset: 0,
-  background: "rgba(0,0,0,0.9)",
-  zIndex: 200,
-  display: "flex",
-  alignItems: "flex-end"
-};
-
-const modal = {
-  width: "100%",
-  background: "#111",
-  borderTop: "1px solid #2A2A2A",
-  borderRadius: "16px 16px 0 0",
-  padding: 16,
-  maxHeight: "90vh",
-  overflowY: "auto"
-};
-
-const item = {
-  padding: "10px 0",
-  borderBottom: "1px solid #2A2A2A"
-};
-
-const button = {
-  marginTop: 15,
-  width: "100%",
-  padding: "12px",
-  borderRadius: 8,
-  background: "#1A1A1A",
-  color: "#E8E0D0",
-  border: "1px solid #2A2A2A",
-  cursor: "pointer"
-};
 
 export default HistorialView;

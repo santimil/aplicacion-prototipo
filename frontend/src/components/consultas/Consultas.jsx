@@ -5,7 +5,7 @@ import ConsultasList from "./ConsultasList";
 import RespuestaBox from "./RespuestaBox";
 import { getConsultas, createConsulta, updateConsulta } from "../../services/api";
 
-function ConsultasView({ order, user, onClose }) {
+function ConsultasView({ order, user, onClose, theme }) {
 
   const [consultas, setConsultas] = useState([]);
   const [selectedConsulta, setSelectedConsulta] = useState(null);
@@ -144,6 +144,7 @@ function ConsultasView({ order, user, onClose }) {
         consultas={consultas}
         isAdmin={user.rol === "admin"}
         onResponder={handleSaveRespuesta}
+        theme={theme}
       />
 
     </div>

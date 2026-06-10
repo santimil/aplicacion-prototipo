@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
+import {
+  getInputStyle
+} from "../styles/styles";
 
 
-function OrderForm({ onCreate, onCancel, prefill }) {
+function OrderForm({ onCreate, onCancel, prefill, theme }) {
   const [form, setForm] = useState({
     numero: "",
     cliente: "",
@@ -26,24 +29,26 @@ function OrderForm({ onCreate, onCancel, prefill }) {
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
+  const inputStyle = getInputStyle(theme);
+
   return (
     <div style={{
       padding: 12,
       paddingBottom: 80,
-      color: "#E8E0D0"
+      color: theme.text
     }}>
 
       {/* TÍTULO */}
       <h2 style={{
         marginBottom: 16,
-        color: "#E8E0D0"
+        color: theme.text
       }}>
         Nueva Orden
       </h2>
 
       {/* INPUT */}
       <div style={{ marginBottom: 12 }}>
-        <label style={{ fontSize: 12, color: "#666" }}>
+        <label style={{ fontSize: 12, color: theme.secondaryText }}>
           NÚMERO OT
         </label>
         <input
@@ -54,7 +59,7 @@ function OrderForm({ onCreate, onCancel, prefill }) {
       </div>
 
       <div style={{ marginBottom: 12 }}>
-        <label style={{ fontSize: 12, color: "#666" }}>
+        <label style={{ fontSize: 12, color: theme.secondaryText }}>
           CLIENTE
         </label>
         <input
@@ -65,7 +70,7 @@ function OrderForm({ onCreate, onCancel, prefill }) {
       </div>
 
       <div style={{ marginBottom: 12 }}>
-        <label style={{ fontSize: 12, color: "#666" }}>
+        <label style={{ fontSize: 12, color: theme.secondaryText }}>
           TRABAJO
         </label>
         <input
@@ -76,7 +81,7 @@ function OrderForm({ onCreate, onCancel, prefill }) {
       </div>
 
       <div style={{ marginBottom: 12 }}>
-        <label style={{ fontSize: 12, color: "#666" }}>
+        <label style={{ fontSize: 12, color: theme.secondaryText }}>
           FECHA INGRESO
         </label>
         <input
@@ -88,7 +93,7 @@ function OrderForm({ onCreate, onCancel, prefill }) {
       </div>
 
       <div style={{ marginBottom: 12 }}>
-        <label style={{ fontSize: 12, color: "#666" }}>
+        <label style={{ fontSize: 12, color: theme.secondaryText }}>
           DIAS ASIGNADOS
         </label>
         <input
@@ -102,7 +107,7 @@ function OrderForm({ onCreate, onCancel, prefill }) {
 
       {/* SELECT AREA */}
       <div style={{ marginBottom: 12 }}>
-        <label style={{ fontSize: 12, color: "#666" }}>
+        <label style={{ fontSize: 12, color: theme.secondaryText }}>
           ÁREA
         </label>
         <select
@@ -122,7 +127,7 @@ function OrderForm({ onCreate, onCancel, prefill }) {
 
       {/* SELECT PRIORIDAD */}
       <div style={{ marginBottom: 20 }}>
-        <label style={{ fontSize: 12, color: "#666" }}>
+        <label style={{ fontSize: 12, color: theme.secondaryText }}>
           PRIORIDAD
         </label>
         <select
@@ -138,7 +143,7 @@ function OrderForm({ onCreate, onCancel, prefill }) {
       </div>
 
       <div style={{ marginBottom: 20 }}>
-        <label style={{ fontSize: 12, color: "#666" }}>
+        <label style={{ fontSize: 12, color: theme.secondaryText }}>
           NOTAS
         </label>
         <textarea
@@ -178,9 +183,9 @@ function OrderForm({ onCreate, onCancel, prefill }) {
           style={{
             flex: 1,
             padding: "10px",
-            background: "#1A1A1A",
-            color: "#666",
-            border: "1px solid #2A2A2A",
+            background: theme.card,
+            color: theme.secondaryText,
+            border: `1px solid ${theme.border}`,
             borderRadius: 6,
             cursor: "pointer"
           }}
@@ -192,17 +197,5 @@ function OrderForm({ onCreate, onCancel, prefill }) {
     </div>
   );
 }
-
-const inputStyle = {
-  width: "100%",
-  padding: "10px",
-  marginTop: 4,
-  background: "#111",
-  border: "1px solid #2A2A2A",
-  borderRadius: 6,
-  color: "#E8E0D0",
-  outline: "none",
-  boxSizing: "border-box"
-};
 
 export default OrderForm;

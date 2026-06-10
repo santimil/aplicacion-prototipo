@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { updateCuestionario } from "../services/api";
 import { supabase } from "../supabaseClient";
 import { getPlanos, deletePlano, uploadPlanos } from "../services/api";
-import { overlay, modal, inputStyle, labelStyle, buttonPrimary, buttonSecondary, dangerButtonStyle,
-  uploadButtonStyle, cardStyle, chipStyle, sectionTitleStyle } from "../styles/styles";
+import { overlay, getModalStyle, getInputStyle, getLabelStyle, buttonPrimary, buttonSecondary, dangerButtonStyle,
+  getActionButton, getCardStyle, chipStyle, sectionTitleStyle } from "../styles/styles";
 
-function CuestionarioModal({ order, onClose, onSaveLocal }) {
+function CuestionarioModal({ order, onClose, onSaveLocal, theme }) {
 
   const [planosFiles, setPlanosFiles] = useState([]);
   const [saving, setSaving] = useState(false);
@@ -116,13 +116,19 @@ function CuestionarioModal({ order, onClose, onSaveLocal }) {
     }
   };
 
+  const modal = getModalStyle(theme);
+  const inputStyle = getInputStyle(theme);
+  const cardStyle = getCardStyle(theme);
+  const uploadButtonStyle = getActionButton(theme);
+  const labelStyle = getLabelStyle(theme);
+
   return (
     <div style={overlay}>
 
       <div style={modal}>
 
         <h3 style={{ color: "#FFB74D", marginBottom: 10 }}>
-          📋 Cuestionario - {order.numero}
+          📋 Detalles - {order.numero}
         </h3>
 
         {/* COLOR */}
@@ -304,7 +310,7 @@ function CuestionarioModal({ order, onClose, onSaveLocal }) {
           <div style={{ marginTop: 15 }}>
 
             <div style={{
-              color: "#888",
+              color: theme.text,
               fontSize: 12,
               marginBottom: 8
             }}>
@@ -325,14 +331,16 @@ function CuestionarioModal({ order, onClose, onSaveLocal }) {
                     ...chipStyle,
 
                     color:
-                    selectedExistingPlano?.id === plano.id
-                      ? "#111"
-                      : "#E8E0D0",
+                      selectedExistingPlano?.id === plano.id
+                        ? "#111"
+                        : theme.text,
 
-                    background:
-                    selectedExistingPlano?.id === plano.id
-                      ? "#FFB74D"
-                      : "#1A1A1A"
+                      background:
+                      selectedExistingPlano?.id === plano.id
+                        ? "#FFB74D"
+                        : theme.card,
+
+                      border: `1px solid ${theme.border}`
                   }}
                 >
                   {plano.nombre}
@@ -432,8 +440,9 @@ function CuestionarioModal({ order, onClose, onSaveLocal }) {
         {/* BOTONES */}
         <div style={{ display: "flex", gap: 10, marginTop: 15, 
             position: "sticky",
-            bottom: 0 }}>
-          <button style={buttonSecondary} onClick={onClose}>
+            bottom: 0}}>
+          <button style={{...buttonSecondary, background: theme.surface,
+            color: theme.text,}} onClick={onClose}>
             Cancelar
           </button>
 
