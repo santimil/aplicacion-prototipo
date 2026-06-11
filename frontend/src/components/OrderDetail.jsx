@@ -6,11 +6,6 @@ import {
   PCOLORS,
   AREAS
 } from "../constant/orderConstants";
-import {
-  formatDate,
-  isDelivered,
-  isOverdue
-} from "../utils/orderUtils";
 import { getHistorial } from "../services/api"
 import { useOrderDetail } from "../hooks/useOrderDetail";
 import OrderDetailView from "../views/OrderDetailView";
@@ -32,7 +27,9 @@ function OrderDetail({ orderId, orders, onRefresh, onBack, onMove, onUpdate, onO
     handleSave,
     handleDelete,
     handleSendToControl,
+    handleEnCamino,
     handleEntregar,
+    handleReclamo,
 
     setIsEditing,
     setShowDeleteModal,
@@ -90,7 +87,9 @@ function OrderDetail({ orderId, orders, onRefresh, onBack, onMove, onUpdate, onO
       handleDelete={handleDelete}
 
       handleSendToControl={handleSendToControl}
+      handleEnCamino={handleEnCamino}
       handleEntregar={handleEntregar}
+      handleReclamo={handleReclamo}
 
       handleExportPDF={handleExportPDF}
 

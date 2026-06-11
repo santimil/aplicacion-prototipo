@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { updateOrder, deleteOrder, sendOrderToControl, entregarOrden } from "../services/api";
+import { updateOrder, deleteOrder, sendOrderToControl, marcarOrdenEnCamino, 
+  entregarOrden, reclamarOrden } from "../services/api";
 
 export function useOrderDetail({
   order,
@@ -101,6 +102,24 @@ export function useOrderDetail({
     }
   }
 
+  async function handleEnCamino() {
+    try {
+
+      const updated = await marcarOrdenEnCamino(order.id);
+
+      onUpdate(updated);
+
+      alert("Orden en camino");
+
+    } catch (err) {
+      console.error(err);
+
+      alert(
+        err.message || "Error marcando viaje"
+      );
+    }
+  }
+
   async function handleEntregar() {
     try {
 
@@ -119,6 +138,24 @@ export function useOrderDetail({
     }
   }
 
+  async function handleReclamo() {
+    try {
+
+      const updated = await reclamarOrden(order.id);
+
+      onUpdate(updated);
+
+      alert("Orden reclamada");
+
+    } catch (err) {
+      console.error(err);
+
+      alert(
+        err.message || "Error marcando reclamo"
+      );
+    }
+  }
+
   return {
     form,
     errors,
@@ -131,7 +168,9 @@ export function useOrderDetail({
     handleSave,
     handleDelete,
     handleSendToControl,
+    handleEnCamino,
     handleEntregar,
+    handleReclamo,
 
     setIsEditing,
     setShowDeleteModal,

@@ -334,9 +334,31 @@ export async function updateControlCheck(
   return res.json();
 }
 
+export async function marcarOrdenEnCamino(orderId) {
+  const res = await authFetch(
+    `/orders/camino/${orderId}`,
+    {
+      method: "PUT"
+    }
+  );
+
+  return res.json();
+}
+
 export async function entregarOrden(orderId) {
   const res = await authFetch(
     `/orders/entregar/${orderId}`,
+    {
+      method: "PUT"
+    }
+  );
+
+  return res.json();
+}
+
+export async function reclamarOrden(orderId) {
+  const res = await authFetch(
+    `/orders/reclamo/${orderId}`,
     {
       method: "PUT"
     }

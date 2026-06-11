@@ -3,23 +3,12 @@ import {
   AREAS,
   PCOLORS
 } from "../constant/orderConstants";
+import {
+  getDeliveryStatus
+} from "../utils/orderUtils";
 
 function Kanban({ orders, users, onSelectOrder, search, setSearch, filterArea, setFilterArea, 
   onOpenCuestionario, onOpenConsultas, theme, darkMode, setDarkMode }) {
-  function isOverdue(order) {
-    if (!order.fecha_entrega) return false;
-
-    if (isDelivered(order)) return false;
-
-    const today = new Date();
-    const entrega = new Date(order.fecha_entrega);
-
-    return entrega < today;
-  }
-
-  function isDelivered(order) {
-    return !!order.fecha_entregado;
-  }
 
   const getUserName = (id) => {
     const user = users.find(u => u.id === id);
@@ -174,7 +163,10 @@ function Kanban({ orders, users, onSelectOrder, search, setSearch, filterArea, s
                 VACÍO
                 </div>
             ) : (
-              areaOrders.map(o => (
+              areaOrders.map(o => {
+                const status = getDeliveryStatus(o);
+
+                return (
                 <div 
                 key={o.id} 
                 onClick={() => onSelectOrder(o)}
@@ -214,21 +206,17 @@ function Kanban({ orders, users, onSelectOrder, search, setSearch, filterArea, s
                     </div>
                   )}
 
-                  {isDelivered(o) ? (
-                    <span style={{
-                      marginLeft: 10,
-                      fontSize: 12,
-                      color: "#81C784"
-                    }}>
-                      ✅ ENTREGADA
-                    </span>
-                  ) : isOverdue(o) && (
-                    <span style={{
-                      marginLeft: 10,
-                      fontSize: 12,
-                      color: "#FF5252"
-                    }}>
-                      ⚠ VENCIDA
+                  
+
+                  {status && (
+                    <span
+                      style={{
+                        marginLeft: 10,
+                        fontSize: 12,
+                        color: status.color
+                      }}
+                    >
+                      {status.text}
                     </span>
                   )}
                 </div>
@@ -308,7 +296,7 @@ function Kanban({ orders, users, onSelectOrder, search, setSearch, filterArea, s
                     </span>
                 </div>
                 </div>
-              ))
+              )})
             )}
           </div>
         );

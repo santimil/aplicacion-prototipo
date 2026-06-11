@@ -2,7 +2,8 @@ import { MOVIMIENTO } from "../constant/orderConstants";
 import {
   formatDate,
   isDelivered,
-  isOverdue
+  isOverdue,
+  getDeliveryStatus
 } from "../utils/orderUtils";
 import {
   AREAS
@@ -30,7 +31,9 @@ function OrderDetailView({ order,
       handleSave,
       handleDelete,
       handleSendToControl,
+      handleEnCamino,
       handleEntregar,
+      handleReclamo,
       handleExportPDF,
       setIsEditing,
       setShowDeleteModal,
@@ -50,6 +53,7 @@ function OrderDetailView({ order,
     const selectStyle = getSelectStyle(theme);
     const actionButton = getActionButton(theme);
     const secondaryButton = getSecondaryButton(theme);
+    const deliveryStatus = getDeliveryStatus(order);
 
     const excelButton = {
       ...actionButton,
@@ -101,30 +105,17 @@ function OrderDetailView({ order,
 
         {/* HEADER */}
         <div style={{ marginBottom: 16 }}>
-          <div style={{
-            fontSize: 22,
-            fontWeight: "bold",
-            color: "#FFB74D"
-          }}>
-            {order.numero || "SIN N°"}
-            {isDelivered(order) ? (
-              <span style={{
+          {deliveryStatus && (
+            <span
+              style={{
                 marginLeft: 10,
                 fontSize: 12,
-                color: "#81C784"
-              }}>
-                ✅ ENTREGADA
-              </span>
-            ) : isOverdue(order) && (
-              <span style={{
-                marginLeft: 10,
-                fontSize: 12,
-                color: "#FF5252"
-              }}>
-                ⚠ VENCIDA
-              </span>
-            )}
-          </div>
+                color: deliveryStatus.color
+              }}
+            >
+              {deliveryStatus.text}
+            </span>
+          )}
 
           <div style={{ fontSize: 18 }}>
             {isEditing ? (
@@ -529,20 +520,54 @@ function OrderDetailView({ order,
                )}
 
                {areaActual === "entrega" &&
-                  user?.rol === "admin" &&
-                  !order.fecha_entregado && (
-                    <button
-                      onClick={handleEntregar}
-                      style={{
-                        ...secondaryButton,
-                        color: "#81C784",
-                        marginTop: "18px",
-                        padding: "4px 8px",
-                        fontSize: 18
-                      }}
-                    >
-                      📦 Marcar entregada
-                    </button>
+                  user?.rol === "admin" && (
+
+                    <>
+                      {order.estado_entrega === "pendiente" && (
+                        <button
+                          onClick={handleEnCamino}
+                          style={{
+                            ...secondaryButton,
+                            color: "#64B5F6",
+                            marginTop: "18px",
+                            padding: "4px 8px",
+                            fontSize: 18
+                          }}
+                        >
+                          🚚 Marcar en camino
+                        </button>
+                      )}
+
+                      {order.estado_entrega === "en_camino" && (
+                        <button
+                          onClick={handleEntregar}
+                          style={{
+                            ...secondaryButton,
+                            color: "#81C784",
+                            marginTop: "18px",
+                            padding: "4px 8px",
+                            fontSize: 18
+                          }}
+                        >
+                          📦 Confirmar entrega
+                        </button>
+                      )}
+
+                      {order.estado_entrega === "entregada" && (
+                        <button
+                          onClick={handleReclamo}
+                          style={{
+                            ...secondaryButton,
+                            color: "#FFB74D",
+                            marginTop: "18px",
+                            padding: "4px 8px",
+                            fontSize: 18
+                          }}
+                        >
+                          ⚠ Registrar reclamo
+                        </button>
+                      )}
+                    </>
                   )}
 
           </div>

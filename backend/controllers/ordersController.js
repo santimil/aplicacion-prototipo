@@ -254,6 +254,34 @@ export async function deleteOrder(req, res) {
   }
 }
 
+export async function marcarEnCamino(req, res) {
+  const supabase = createSupabaseClient(req);
+
+  try {
+    const { id } = req.params;
+
+    const { data, error } = await supabase
+      .from("orden")
+      .update({
+        estado_entrega: "en_camino"
+      })
+      .eq("id", id)
+      .eq("area", "entrega")
+      .select();
+
+    if (error) throw error;
+
+    res.json(data[0]);
+
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      error: "Error actualizando estado"
+    });
+  }
+}
+
 export async function entregarOrder(req, res) {
   const supabase = createSupabaseClient(req);
 
@@ -263,7 +291,8 @@ export async function entregarOrder(req, res) {
     const { data, error } = await supabase
       .from("orden")
       .update({
-        fecha_entregado: new Date().toISOString()
+        fecha_entregado: new Date().toISOString(),
+        estado_entrega: "entregada"
       })
       .eq("id", id)
       .eq("area", "entrega")
@@ -285,6 +314,34 @@ export async function entregarOrder(req, res) {
 
     res.status(500).json({
       error: "Error asignando fecha de entrega"
+    });
+  }
+}
+
+export async function marcarReclama(req, res) {
+  const supabase = createSupabaseClient(req);
+
+  try {
+    const { id } = req.params;
+
+    const { data, error } = await supabase
+      .from("orden")
+      .update({
+        estado_entrega: "reclamada"
+      })
+      .eq("id", id)
+      .eq("area", "entrega")
+      .select();
+
+    if (error) throw error;
+
+    res.json(data[0]);
+
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      error: "Error actualizando estado"
     });
   }
 }
