@@ -26,6 +26,13 @@ export function isOverdue(order) {
 
 export function getDeliveryStatus(order) {
 
+  if (order.estado_entrega === "reclamada" && order.reclamo_resuelto === true) {
+    return {
+      text: "✅ Resuelto",
+      color: "#81C784"
+    };
+  }
+
   if (order.estado_entrega === "reclamada") {
     return {
       text: "⚠ RECLAMADA",
