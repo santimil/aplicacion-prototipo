@@ -14,7 +14,7 @@ export const AREAS = [
   { id: "pintura", label: "Pintura", icon: "◉", color: "#A5D6A7" },
   { id: "armado", label: "Armado/Ductos", icon: "⬡", color: "#a63c06" },
   { id: "control", label: "Control", icon: "🗒️", color: "#DA7422" },
-  { id: "entrega", label: "Entrega", icon: "🛻", color: "#3CF000" }
+  { id: "entrega", label: "Entrega", icon: "🛻", color: "#81C784" }
 ];
 
 export const MOVIMIENTO = [

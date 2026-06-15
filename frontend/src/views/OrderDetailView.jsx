@@ -12,8 +12,10 @@ import {
   getActionButton,
   getInputStyle,
   getSelectStyle,
-  getSecondaryButton
+  getSecondaryButton, 
+  getModalStyle
 } from "../styles/styles";
+import { useState, useEffect } from "react";
 
 
 function OrderDetailView({ order,
@@ -34,6 +36,7 @@ function OrderDetailView({ order,
       handleEnCamino,
       handleEntregar,
       handleReclamo,
+      handleActualizar,
       handleExportPDF,
       setIsEditing,
       setShowDeleteModal,
@@ -54,6 +57,18 @@ function OrderDetailView({ order,
     const actionButton = getActionButton(theme);
     const secondaryButton = getSecondaryButton(theme);
     const deliveryStatus = getDeliveryStatus(order);
+    const modal = getModalStyle(order);
+
+    const reclamoColor = order.reclamo_resuelto
+      ? "#81C784"
+      : "#FF5252";
+
+    const [showReclamoModal, setShowReclamoModal] = useState(false);
+    const [reclamoDescripcion, setReclamoDescripcion] = useState("");
+
+    const [showActualizarModal, setShowActualizarModal] = useState(false);
+    const [reclamoResuelto, setReclamoResuelto] = useState(false);
+    const [textoActualizacion, setTextoActualizacion] = useState("");
 
     const excelButton = {
       ...actionButton,
@@ -432,6 +447,53 @@ function OrderDetailView({ order,
           </div>
         </div>
 
+        {order.estado_entrega === "reclamada" && (
+          <div
+            style={{
+              marginTop: 16,
+              padding: 16,
+              borderRadius: 12,
+              background: "#4A1C1C22",
+              border: `1px solid ${reclamoColor}`
+            }}
+          >
+            <div
+              style={{
+                color: reclamoColor,
+                fontWeight: "bold",
+                marginBottom: 8
+              }}
+            >
+              {
+                order.reclamo_resuelto
+                  ? "✅ Reclamo resuelto"
+                  : "⚠ Reclamo registrado"
+              }
+            </div>
+
+            {order.fecha_reclamo && (
+              <div
+                style={{
+                  marginTop: 8,
+                  fontSize: 12,
+                  color: theme.secondaryText
+                }}
+              >
+                {new Date(order.fecha_reclamo).toLocaleString()}
+              </div>
+            )}
+
+            <div
+              style={{
+                color: theme.text,
+                whiteSpace: "pre-wrap"
+              }}
+            >
+              {order.reclamo_descripcion}
+            </div>
+          </div>
+        )}
+
         {!isEditing && (
           <div style={{ marginTop: 20 }}>
 
@@ -555,7 +617,7 @@ function OrderDetailView({ order,
 
                       {order.estado_entrega === "entregada" && (
                         <button
-                          onClick={handleReclamo}
+                          onClick={() => setShowReclamoModal(true)}
                           style={{
                             ...secondaryButton,
                             color: "#FFB74D",
@@ -565,6 +627,22 @@ function OrderDetailView({ order,
                           }}
                         >
                           ⚠ Registrar reclamo
+                        </button>
+                      )}
+
+                      {order.estado_entrega === "reclamada" && 
+                      !order.reclamo_resuelto && (
+                        <button
+                          onClick={() => setShowActualizarModal(true)}
+                          style={{
+                            ...secondaryButton,
+                            color: "#FFB74D",
+                            marginTop: "18px",
+                            padding: "4px 8px",
+                            fontSize: 18
+                          }}
+                        >
+                          Actualizar Reclamo
                         </button>
                       )}
                     </>
@@ -788,8 +866,207 @@ function OrderDetailView({ order,
         </div>
       )}
 
+      {showReclamoModal && (
+        <div style={overlayStyle}>
+          <div style={modal}>
+
+            <h3 style={{
+              color: "#FF5252",
+              marginBottom: 16,
+              textAlign: "center"
+            }}
+            >⚠ Registrar reclamo</h3>
+
+            <textarea
+              value={reclamoDescripcion}
+              onChange={(e) =>
+                setReclamoDescripcion(e.target.value)
+              }
+              placeholder="Describa el reclamo..."
+              style={{
+                width: "100%",
+                minHeight: 120,
+                boxSizing: "border-box",
+                padding: 10,
+                background: theme.surface,
+                color: theme.text,
+                border: `1px solid ${theme.border}`,
+                borderRadius: 8
+              }}
+            />
+
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                marginTop: 15
+              }}
+            >
+
+              <button
+                onClick={() => {
+                  setShowReclamoModal(false);
+                  setReclamoDescripcion("");
+                }}
+                style={{...secondaryButton, 
+                  gap: 10,
+                  marginTop: 16}}
+              >
+                Cancelar
+              </button>
+
+              <button
+                onClick={async () => {
+
+                  if (!reclamoDescripcion.trim()) {
+                    alert(
+                      "Debe ingresar el motivo del reclamo"
+                    );
+                    return;
+                  }
+
+                  handleReclamo(
+                    reclamoDescripcion
+                  );
+
+                  setShowReclamoModal(false);
+                  setReclamoDescripcion("");
+                }}
+                style={{
+                  ...secondaryButton,
+                  gap: 10,
+                  marginTop: 16,
+                  color: "#FF5252"
+                }}
+              >
+                Guardar
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {showActualizarModal && (
+        <div style={overlayStyle}>
+          <div style={modal}>
+
+            <h3 style={{
+              color: "#81C784",
+              marginBottom: 16,
+              textAlign: "center"
+            }}
+            > Actualizar reclamo</h3>
+
+            <textarea
+              value={textoActualizacion}
+              onChange={(e) =>
+                setTextoActualizacion(e.target.value)
+              }
+              placeholder="Ingrese una actualización del reclamo..."
+              style={{
+                width: "100%",
+                minHeight: 120,
+                boxSizing: "border-box",
+                padding: 10,
+                background: theme.surface,
+                color: theme.text,
+                border: `1px solid ${theme.border}`,
+                borderRadius: 8
+              }}
+            />
+
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                marginTop: 12,
+                color: "#ffffff"
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={reclamoResuelto}
+                onChange={(e) =>
+                  setReclamoResuelto(e.target.checked)
+                }
+              />
+
+              Marcar reclamo como resuelto
+            </label>
+
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                marginTop: 15
+              }}
+            >
+
+              <button
+                onClick={() => {
+                  setShowActualizarModal(false);
+                  setReclamoResuelto(false);
+                  setTextoActualizacion("");
+                }}
+                style={{...secondaryButton, 
+                  gap: 10,
+                  marginTop: 16}}
+              >
+                Cancelar
+              </button>
+
+              <button
+                onClick={async () => {
+
+                  if (!textoActualizacion.trim()) {
+                    alert(
+                      "Debe ingresar una actualizacion del reclamo"
+                    );
+                    return;
+                  }
+
+                  await handleActualizar(
+                    textoActualizacion,
+                    reclamoResuelto
+                  );
+
+                  setShowActualizarModal(false);
+                  setTextoActualizacion("");
+                }}
+                style={{
+                  ...secondaryButton,
+                  gap: 10,
+                  marginTop: 16,
+                  color: "#81C784"
+                }}
+              >
+                Guardar
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>   
   );
 }
+
+const overlayStyle = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  width: "100vw",
+  height: "100vh",
+  background: "rgba(0,0,0,0.7)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  zIndex: 1000
+};
 
 export default OrderDetailView;

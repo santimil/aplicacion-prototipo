@@ -323,11 +323,14 @@ export async function marcarReclama(req, res) {
 
   try {
     const { id } = req.params;
+    const { descripcion } = req.body;
 
     const { data, error } = await supabase
       .from("orden")
       .update({
-        estado_entrega: "reclamada"
+        estado_entrega: "reclamada",
+        reclamo_descripcion: descripcion,
+        fecha_reclamo: new Date().toISOString()
       })
       .eq("id", id)
       .eq("area", "entrega")
@@ -342,6 +345,61 @@ export async function marcarReclama(req, res) {
 
     res.status(500).json({
       error: "Error actualizando estado"
+    });
+  }
+}
+
+export async function actualizarReclamo(req, res) {
+  const supabase = createSupabaseClient(req);
+
+  try {
+    const { id } = req.params;
+    const {
+      actualizacion,
+      resuelto
+    } = req.body;
+
+    // Obtener reclamo actual
+    const { data: orden, error: getError } =
+      await supabase
+        .from("orden")
+        .select("reclamo_descripcion")
+        .eq("id", id)
+        .single();
+
+    if (getError) throw getError;
+
+    const fecha = new Date().toLocaleString("es-UY");
+
+    let nuevoTexto = orden.reclamo_descripcion || "";
+
+    if (actualizacion?.trim()) {
+
+      nuevoTexto += `
+
+    [${fecha}]
+    ${actualizacion}`;
+    }
+
+    const { data, error } = await supabase
+      .from("orden")
+      .update({
+        reclamo_descripcion: nuevoTexto,
+        reclamo_resuelto: !!resuelto
+      })
+      .eq("id", id)
+      .select();
+
+    if (error) throw error;
+
+    res.json(data[0]);
+
+  } catch (err) {
+
+    console.error(err);
+
+    res.status(500).json({
+      error: "Error actualizando reclamo"
     });
   }
 }

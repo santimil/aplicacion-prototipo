@@ -30,6 +30,7 @@ function OrderDetail({ orderId, orders, onRefresh, onBack, onMove, onUpdate, onO
     handleEnCamino,
     handleEntregar,
     handleReclamo,
+    handleActualizar,
 
     setIsEditing,
     setShowDeleteModal,
@@ -90,6 +91,7 @@ function OrderDetail({ orderId, orders, onRefresh, onBack, onMove, onUpdate, onO
       handleEnCamino={handleEnCamino}
       handleEntregar={handleEntregar}
       handleReclamo={handleReclamo}
+      handleActualizar={handleActualizar}
 
       handleExportPDF={handleExportPDF}
 

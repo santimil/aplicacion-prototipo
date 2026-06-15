@@ -356,11 +356,20 @@ export async function entregarOrden(orderId) {
   return res.json();
 }
 
-export async function reclamarOrden(orderId) {
+export async function reclamarOrden(
+  orderId,
+  descripcion
+) {
   const res = await authFetch(
     `/orders/reclamo/${orderId}`,
     {
-      method: "PUT"
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        descripcion
+      })
     }
   );
 
@@ -368,6 +377,27 @@ export async function reclamarOrden(orderId) {
 }
 
 
+export async function actualizarReclamo(
+  orderId,
+  actualizacion,
+  resuelto
+) {
+  const res = await authFetch(
+    `/orders/actualizar-reclamo/${orderId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        actualizacion,
+        resuelto
+      })
+    }
+  );
+
+  return res.json();
+}
 
 
 
