@@ -19,6 +19,10 @@ export async function getOrders(req, res) {
 export async function createOrder(req, res) {
   const supabase = createSupabaseClient(req);
 
+  const MAX_NUMERO_LENGTH = 30;
+  const MAX_CLIENTE_LENGTH = 100;
+  const MAX_TRABAJO_LENGTH = 300;
+
   try {
     let {
       numero,
@@ -32,6 +36,10 @@ export async function createOrder(req, res) {
       usuario_id
     } = req.body;
 
+    numero = numero?.trim();
+    cliente = cliente?.trim();
+    trabajo = trabajo?.trim();
+
     if (!numero || !cliente || !trabajo) {
       return res.status(400).json({
         error: "Faltan campos obligatorios"
@@ -39,6 +47,24 @@ export async function createOrder(req, res) {
     }
 
     const dias = Number(diasAsignados);
+
+    if (numero.trim().length > MAX_NUMERO_LENGTH) {
+      return res.status(400).json({
+        error: `El número no puede superar los ${MAX_NUMERO_LENGTH} caracteres`
+      });
+    }
+
+    if (cliente.trim().length > MAX_CLIENTE_LENGTH) {
+      return res.status(400).json({
+        error: `El cliente no puede superar los ${MAX_CLIENTE_LENGTH} caracteres`
+      });
+    }
+
+    if (trabajo.trim().length > MAX_TRABAJO_LENGTH) {
+      return res.status(400).json({
+        error: `El trabajo no puede superar los ${MAX_TRABAJO_LENGTH} caracteres`
+      });
+    }
 
     if (isNaN(dias) || dias <= 0) {
       return res.status(400).json({
@@ -125,6 +151,9 @@ function isValidDate(date) {
 export async function updateOrder(req, res) {
   const supabase = createSupabaseClient(req);
 
+  const MAX_CLIENTE_LENGTH = 100;
+  const MAX_TRABAJO_LENGTH = 300;
+
   try {
     const { id } = req.params;
 
@@ -150,6 +179,19 @@ export async function updateOrder(req, res) {
     if (numero !== undefined) updates.numero = numero;
     if (cliente !== undefined) updates.cliente = cliente;
     if (trabajo !== undefined) updates.trabajo = trabajo;
+
+    if (cliente.trim().length > MAX_CLIENTE_LENGTH) {
+      return res.status(400).json({
+        error: `El cliente no puede superar los ${MAX_CLIENTE_LENGTH} caracteres`
+      });
+    }
+
+    if (trabajo.trim().length > MAX_TRABAJO_LENGTH) {
+      return res.status(400).json({
+        error: `El trabajo no puede superar los ${MAX_TRABAJO_LENGTH} caracteres`
+      });
+    }
+    
     if (area !== undefined) {
       updates.area = area;
 

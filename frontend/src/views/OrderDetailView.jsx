@@ -139,7 +139,19 @@ function OrderDetailView({ order,
                 value={form.cliente}
                 onChange={e => handleChange("cliente", e.target.value)}
                 style={inputStyle}
+                maxLength={100}
               />
+
+              <div
+                style={{
+                  fontSize: 11,
+                  color: theme.secondaryText,
+                  textAlign: "right",
+                  marginTop: 4
+                }}
+              >
+                {form.cliente.length}/100
+              </div>
 
               {errors.cliente && (
                  <div style={{ color: "red", fontSize: 11 }}>
@@ -179,7 +191,19 @@ function OrderDetailView({ order,
                 value={form.trabajo}
                 onChange={e => handleChange("trabajo", e.target.value)}
                 style={inputStyle}
+                maxLength={300}
               />
+
+              <div
+                style={{
+                  fontSize: 11,
+                  color: theme.secondaryText,
+                  textAlign: "right",
+                  marginTop: 4
+                }}
+              >
+                {form.trabajo.length}/300
+              </div>
 
               {errors.trabajo && (
                  <div style={{ color: "red", fontSize: 11 }}>

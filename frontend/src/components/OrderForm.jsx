@@ -55,7 +55,11 @@ function OrderForm({ onCreate, onCancel, prefill, theme }) {
           value={form.numero}
           onChange={e => handleChange("numero", e.target.value)}
           style={inputStyle}
+          maxLength={30}
         />
+        <div style={{ fontSize: 12, color: theme.secondaryText }}>
+          {form.numero.length}/30
+        </div>
       </div>
 
       <div style={{ marginBottom: 12 }}>
@@ -66,7 +70,11 @@ function OrderForm({ onCreate, onCancel, prefill, theme }) {
           value={form.cliente}
           onChange={e => handleChange("cliente", e.target.value)}
           style={inputStyle}
+          maxLength={100}
         />
+        <div style={{ fontSize: 12, color: theme.secondaryText }}>
+          {form.cliente.length}/100
+        </div>
       </div>
 
       <div style={{ marginBottom: 12 }}>
@@ -77,7 +85,11 @@ function OrderForm({ onCreate, onCancel, prefill, theme }) {
           value={form.trabajo}
           onChange={e => handleChange("trabajo", e.target.value)}
           style={inputStyle}
+          maxLength={300}
         />
+        <div style={{ fontSize: 12, color: theme.secondaryText }}>
+          {form.trabajo.length}/300
+        </div>
       </div>
 
       <div style={{ marginBottom: 12 }}>
