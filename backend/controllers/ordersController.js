@@ -281,6 +281,33 @@ export async function deleteOrder(req, res) {
   try {
     const { id } = req.params;
 
+    const { data: cuestionario, error: cuestionarioError } = await supabase
+      .from("cuestionario")
+      .select("id")
+      .eq("orden_id", id)
+      .single();
+
+    if (cuestionarioError) throw cuestionarioError;
+
+    const { data: rutas, error: rutasError } = await supabase
+      .from("planos_archivos")
+      .select("path")
+      .eq("cuestionario_id", cuestionario.id);
+
+    if (rutasError) throw rutasError;
+
+    const paths = rutas
+      .map(r => r.path)
+      .filter(Boolean);
+
+    if (paths.length > 0) {
+      const { error: storageError } = await supabase.storage
+        .from("planos")
+        .remove(paths);
+
+      if (storageError) throw storageError;
+    }
+
     const { error } = await supabase
       .from("orden")
       .delete()
