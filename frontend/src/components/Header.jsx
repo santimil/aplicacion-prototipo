@@ -27,9 +27,7 @@ function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchO
     toggleMenu
   } = useMenu();
   const {
-    loadingOCR,
-    currentIndex,
-    totalFiles,
+    progress,
     pendingFiles,
     showModeSelector,
     closeModeSelector,
@@ -317,25 +315,47 @@ function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchO
         </div>
       )}
 
-      {loadingOCR && (
-        <div style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          background: "rgba(0,0,0,0.8)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 999
-        }}>
-          <div style={{ color: "#E8E0D0", fontSize: 16 }}>
-            {totalFiles > 1
-              ? mode === "auto"
-                ? `📄 Creando orden ${currentIndex} de ${totalFiles}...`
-                : `📄 Procesando orden ${currentIndex} de ${totalFiles}...`
-              : "📄 Procesando orden..."}
+      {progress.active && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "rgba(0,0,0,0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 999
+          }}
+        >
+          <div
+            style={{
+              color: "#E8E0D0",
+              textAlign: "center",
+              minWidth: "350px"
+            }}
+          >
+            <h3>{progress.title}</h3>
+
+            <progress
+              value={progress.current}
+              max={progress.total}
+              style={{
+                width: "100%"
+              }}
+            />
+
+            <p>
+              {progress.current} / {progress.total}
+            </p>
+
+            <p>
+              {Math.round(
+                (progress.current / progress.total) * 100
+              )}%
+            </p>
           </div>
         </div>
       )}

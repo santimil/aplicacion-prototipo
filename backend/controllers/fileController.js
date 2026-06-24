@@ -76,13 +76,28 @@ export async function handleFile(req, res) {
     ) {
       const workbook = xlsx.readFile(file.path);
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const json = xlsx.utils.sheet_to_json(sheet);
+      const rows = xlsx.utils.sheet_to_json(sheet, {
+        header: 1
+      });
+
+      const headers = rows[3];
+
+      const dataRows = rows.slice(4);
+
+      const json = dataRows.map(row => {
+        const obj = {};
+
+        headers.forEach((header, index) => {
+          obj[header] = row[index];
+        });
+
+        return obj;
+      });
 
       const parsed = parseExcelToOrder(json);
 
       return res.json({
-        data: parsed,
-        skipped: json.length - parsed.length
+        data: parsed
       });
     }
 
@@ -123,29 +138,135 @@ function normalizeKey(key) {
     return true;
   }
 
-  function parseExcelToOrder(rows) {
+  function parseStandardExcel(rows) {
     return rows
-        .map(originalRow => {
-        const row = normalizeRow(originalRow);
+      .map(row => ({
+        numero: row["numero"] || "",
+        cliente: row["cliente"] || "",
+        trabajo: row["trabajo"] || "",
 
-        return {
-            numero: row["numero"] || "",
-            cliente: row["cliente"] || "",
-            trabajo: row["trabajo"] || "",
+        area: row["area"] || "",
+        prioridad: row["prioridad"] || "",
 
-            area: row["area"] || "",
-            prioridad: row["prioridad"] || "",
+        fechaIngreso: parseExcelDate(row["fecha ingreso"]),
+        fechaEntrega: parseExcelDate(row["fecha entrega"]),
 
-            fechaIngreso: parseExcelDate(row["fecha ingreso"]),
-            fechaEntrega: parseExcelDate(row["fecha entrega"]),
+        diasAsignados:
+          row["dias asignados"]?.toString() || "0",
 
-            diasAsignados: row["dias asignados"]?.toString() || "10",
+        notas: "",
+        cuestionario: {}
+      }))
+      .filter(validateRow);
+  }
 
-            notas: "",
-            cuestionario: {}
-        };
-        })
-        .filter(validateRow); // 👈 clave
+  function parseVentasExcel(rows) {
+    const grouped = {};
+
+    for (const row of rows) {
+      const numero =
+        row["nº"] ||
+        row["n°"] ||
+        row["no"] ||
+        "";
+
+      if (!numero) continue;
+
+      if (!grouped[numero]) {
+        grouped[numero] = [];
+      }
+
+      grouped[numero].push(row);
+    }
+
+    const orders = [];
+
+    for (const [numero, orderRows] of Object.entries(grouped)) {
+
+      const multipleRows = orderRows.length > 1;
+
+      orderRows.forEach((row, index) => {
+
+        const articulo = (row.articulo || "")
+          .replace(/\s+/g, " ")
+          .trim();
+
+        const descripcion = (row.descripcion || "")
+          .replace(/\s+/g, " ")
+          .trim();
+
+        const cantidad = (row.cantidad || "")
+          .toString()
+          .trim();
+
+        const fechaIngreso = parseExcelDate(row.fecha);
+
+        let numeroFinal = numero.toString();
+
+        if (multipleRows) {
+          const letra =
+            String.fromCharCode(65 + index); // A, B, C...
+          numeroFinal = `${numero}-${letra}`;
+        }
+
+        orders.push({
+          numero: numeroFinal,
+
+          cliente: row.cliente || "",
+
+          trabajo:
+            `- ${articulo} - ${descripcion} X ${cantidad}`,
+
+          area: "inicio",
+          prioridad: "baja",
+
+          fechaIngreso,
+          fechaEntrega: "",
+          diasAsignados: "0",
+
+          notas: "",
+          cuestionario: {}
+        });
+      });
+    }
+
+    return orders;
+  }
+
+  function parseExcelToOrder(rows) {
+    const normalizedRows = rows.map(normalizeRow);
+
+    console.log("Primera fila:", normalizedRows[0]);
+
+    console.log(
+      "isVentasFormat:",
+      isVentasFormat(normalizedRows[0])
+    );
+
+    if (
+      normalizedRows.length > 0 &&
+      isVentasFormat(normalizedRows[0])
+    ) {
+      console.log("USANDO PARSER VENTAS");
+      return parseVentasExcel(normalizedRows);
+    }
+
+    console.log("USANDO PARSER STANDARD");
+
+    return parseStandardExcel(normalizedRows);
+  }
+
+    function isVentasFormat(row) {
+      return (
+        row["cliente"] !== undefined &&
+        row["descripcion"] !== undefined &&
+        row["articulo"] !== undefined &&
+        row["cantidad"] !== undefined &&
+        (
+          row["nº"] !== undefined ||
+          row["n°"] !== undefined
+        )
+      );
     }
 
     function parseExcelDate(value) {

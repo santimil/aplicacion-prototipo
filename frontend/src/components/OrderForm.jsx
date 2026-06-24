@@ -10,8 +10,6 @@ function OrderForm({ onCreate, onCancel, prefill, theme }) {
     cliente: "",
     trabajo: "",
     fechaIngreso: "",
-    diasAsignados: "",
-    area: "inicio",
     prioridad: "baja",
     notas: ""
   });
@@ -102,39 +100,6 @@ function OrderForm({ onCreate, onCancel, prefill, theme }) {
           onChange={e => handleChange("fechaIngreso", e.target.value)}
           style={inputStyle}
         />
-      </div>
-
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ fontSize: 12, color: theme.secondaryText }}>
-          DIAS ASIGNADOS
-        </label>
-        <input
-          type="number"
-          value={form.diasAsignados}
-          onChange={e => handleChange("diasAsignados", Number(e.target.value))}
-          style={inputStyle}
-          min="0"
-        />
-      </div>
-
-      {/* SELECT AREA */}
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ fontSize: 12, color: theme.secondaryText }}>
-          ÁREA
-        </label>
-        <select
-          value={form.area}
-          onChange={e => handleChange("area", e.target.value)}
-          style={inputStyle}
-        >
-          <option value="inicio">Inicio</option>
-          <option value="corte">Corte</option>
-          <option value="plegado">Plegado</option>
-          <option value="soldadura">Soldadura</option>
-          <option value="limpieza">Pulido</option>
-          <option value="pintura">Pintura</option>
-          <option value="armado">Armado</option>
-        </select>
       </div>
 
       {/* SELECT PRIORIDAD */}

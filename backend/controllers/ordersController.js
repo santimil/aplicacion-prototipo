@@ -29,8 +29,6 @@ export async function createOrder(req, res) {
       cliente,
       trabajo,
       fechaIngreso,
-      diasAsignados,
-      area,
       prioridad,
       notas,
       usuario_id
@@ -45,8 +43,6 @@ export async function createOrder(req, res) {
         error: "Faltan campos obligatorios"
       });
     }
-
-    const dias = Number(diasAsignados);
 
     if (numero.trim().length > MAX_NUMERO_LENGTH) {
       return res.status(400).json({
@@ -66,27 +62,18 @@ export async function createOrder(req, res) {
       });
     }
 
-    if (isNaN(dias) || dias <= 0) {
-      return res.status(400).json({
-        error: "Días asignados inválidos"
-      });
-    }
-
     if (!isValidDate(fechaIngreso)) {
       fechaIngreso = new Date().toISOString();
     }
-
-    const fechaEntrega = new Date(fechaIngreso);
-    fechaEntrega.setDate(fechaEntrega.getDate() + dias);
 
     let nuevaOrden = {
       numero,
       cliente,
       trabajo,
       fecha_ingreso: fechaIngreso,
-      dias_asignados: dias,
-      fecha_entrega: fechaEntrega,
-      area,
+      dias_asignados: 0,
+      fecha_entrega: null,
+      area: "inicio",
       prioridad,
       notas: notas || null,
       creado_por: usuario_id,
@@ -157,8 +144,6 @@ export async function updateOrder(req, res) {
   try {
     const { id } = req.params;
 
-    const { fecha_ingreso } = req.params;
-
     const {
       numero,
       cliente,
@@ -201,7 +186,11 @@ export async function updateOrder(req, res) {
         .eq("id", id)
         .single();
 
-      if (fetchError) throw fetchError;
+      if (fetchError) {
+        return res.status(404).json({
+          error: "La orden ya no existe"
+        });
+      }
 
       oldArea = existingOrder.area;
       oldAssigned = existingOrder.asignado_a;
@@ -217,8 +206,6 @@ export async function updateOrder(req, res) {
       }
 
       updates.dias_asignados = dias;
-      
-      updates.dias_asignados = dias_asignados;
 
       // 🔹 traer fecha_ingreso desde DB
       const { data: existingOrder, error: fetchError } = await supabase
@@ -247,6 +234,12 @@ export async function updateOrder(req, res) {
       .select();
 
     if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        error: "La orden ya no existe"
+      });
+    }
 
     if (area !== undefined && area !== oldArea) {
       const { error: historyError } = await supabase

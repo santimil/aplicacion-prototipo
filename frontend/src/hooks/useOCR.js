@@ -28,6 +28,13 @@ export function useOCR({
     setShowModeSelector(false);
   }
 
+  const [progress, setProgress] = useState({
+    active: false,
+    title: "",
+    current: 0,
+    total: 0
+  });
+
   const [pendingFiles, setPendingFiles] =
     useState([]);
 
@@ -97,8 +104,8 @@ export function useOCR({
   function normalizeOCRResponse(data) {
 
     if (data?.data) {
-        if (data.skipped > 0) {
-        alert(`⚠️ ${data.skipped} filas inválidas ignoradas`);
+        if (data.skipped && data.skipped > 0) {
+          alert(`⚠️ ${data.skipped} filas inválidas ignoradas`);
         }
         return data.data;
     }
@@ -109,75 +116,101 @@ export function useOCR({
   }
 
   async function processFiles(files) {
-    setLoadingOCR(true);
-    setTotalFiles(files.length);
 
-    const results = [];
+    try {
+      setProgress({
+        active: true,
+        title: "Escaneando archivos",
+        current: 0,
+        total: files.length
+      });
 
-    for (let i = 0; i < files.length; i++) {
+      const results = [];
 
-      setCurrentIndex(i + 1);
+      for (let i = 0; i < files.length; i++) {
 
-      const file = files[i];
-      let data;
+        const file = files[i];
+        let data;
 
-      try {
+        try {
 
-        const formData =
-          await buildUploadFormData(file);
+          const formData =
+            await buildUploadFormData(file);
 
-        data = await uploadFile(formData);
+          data = await uploadFile(formData);
 
-      } catch (err) {
+        } catch (err) {
 
-        console.error(
-          "Error procesando archivo:",
-          file.name,
-          err
-        );
+          console.error(
+            "Error procesando archivo:",
+            file.name,
+            err
+          );
 
-        continue;
+          continue;
+        }
+
+        const items = normalizeOCRResponse(data);
+
+        const cleanedArray =
+          items.map(d => cleanData(d));
+
+        results.push(...cleanedArray);
+
+        setProgress(prev => ({
+          ...prev,
+          current: i + 1
+        }));
       }
 
-      const items = normalizeOCRResponse(data);
+      const validResults =
+        results.filter(r => r.numero && r.cliente);
 
-      const cleanedArray =
-        items.map(d => cleanData(d));
+      if (validResults.length > 1) {
 
-      results.push(...cleanedArray);
-    }
+        const autoCreate = confirm(
+          `Se detectaron ${validResults.length} órdenes.\n\n` +
+          `Aceptar = crear automáticamente\n` +
+          `Cancelar = revisar una por una`
+        );
 
-    setLoadingOCR(false);
+        if (autoCreate) {
 
-    const validResults =
-      results.filter(r => r.numero && r.cliente);
+          await handleAutoCreate(validResults);
 
-    if (validResults.length > 1) {
+        } else {
 
-      const autoCreate = confirm(
-        `Se detectaron ${validResults.length} órdenes.\n\n` +
-        `Aceptar = crear automáticamente\n` +
-        `Cancelar = revisar una por una`
-      );
-
-      if (autoCreate) {
-
-        await handleAutoCreate(validResults);
+          openPrefillForm(validResults);
+        }
 
       } else {
 
         openPrefillForm(validResults);
       }
-
-    } else {
-
-      openPrefillForm(validResults);
+    }
+    finally {
+      setProgress({
+        active: false,
+        title: "",
+        current: 0,
+        total: 0
+      });
     }
   }
 
   async function handleAutoCreate(prefills) {
     try {
-      for (const prefill of prefills) {
+
+      setProgress({
+        active: true,
+        title: "Creando órdenes",
+        current: 0,
+        total: prefills.length
+      });
+
+      for (let i = 0; i < prefills.length; i++) {
+
+        const prefill = prefills[i];
         console.log("PREFILL:", prefill);
         // 1️⃣ crear orden
         const order = await createOrder({
@@ -190,6 +223,11 @@ export function useOCR({
         if (prefill.cuestionario) {
           await updateCuestionario(order.id, prefill.cuestionario);
         }
+
+        setProgress(prev => ({
+          ...prev,
+          current: i + 1
+        }));
       }
 
       // 3️⃣ volver a kanban
@@ -199,12 +237,18 @@ export function useOCR({
     } catch (err) {
       console.error("Error en auto create:", err);
     }
+    finally {
+      setProgress({
+        active: false,
+        title: "",
+        current: 0,
+        total: 0
+      });
+    }
   }
 
   return {
-    loadingOCR,
-    currentIndex,
-    totalFiles,
+    progress,
     pendingFiles,
     showModeSelector,
     closeModeSelector,
