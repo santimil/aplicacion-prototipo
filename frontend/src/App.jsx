@@ -111,8 +111,6 @@ function App() {
 
     const savedOrder = await addOrder(orderWithUser);
 
-    setOrders(prev => [...prev, savedOrder]);
-
     setSelectedOrder({
       ...savedOrder,
       cuestionario: [currentPrefill?.cuestionario || {}]
@@ -130,7 +128,39 @@ function App() {
     setSelectedOrder(updatedOrder);
   };
 
-  const handleUpdateCuestionario = (ordenId, nuevoCuestionario) => {
+  const advancePrefillQueue = () => {
+
+    setPrefillQueue(prevQueue => {
+
+      const remaining = prevQueue.slice(1);
+
+      setCurrentPrefill(
+        remaining[0] || null
+      );
+
+      if (remaining.length > 0) {
+
+        setView("form");
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+
+      } else {
+
+        goToView("kanban");
+      }
+
+      return remaining;
+    });
+  };
+
+  const handleUpdateCuestionario = (
+    ordenId,
+    nuevoCuestionario
+  ) => {
+
     setOrders(prev =>
       prev.map(o => {
         if (o.id !== ordenId) return o;
@@ -142,22 +172,19 @@ function App() {
       })
     );
 
-    // 👇 manejar cola fuera del setState
-    setPrefillQueue(prevQueue => {
-      const remaining = prevQueue.slice(1);
+    advancePrefillQueue();
+  };
 
-      // actualizar current
-      setCurrentPrefill(remaining[0] || null);
+  const handleCancelForm = () => {
+    const hasQueue =
+        prefillQueue &&
+        prefillQueue.length > 0;
 
-      // navegación
-      if (remaining.length > 0) {
-        setView("form");
-      } else {
-        goToView("kanban");
-      }
-
-      return remaining;
-    });
+    if (hasQueue) {
+      advancePrefillQueue();
+    } else {
+      goBack();
+    }
   };
 
   const openHistorial = (order) => {
@@ -256,7 +283,7 @@ function App() {
           <OrderForm 
             prefill={currentPrefill}
             onCreate={handleCreateOrder}
-            onCancel={goBack}
+            onCancel={handleCancelForm}
             theme={theme}
           />
         )}
