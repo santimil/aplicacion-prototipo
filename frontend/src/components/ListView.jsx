@@ -13,7 +13,7 @@ function getAreaData(areaId) {
   return AREAS.find(a => a.id === areaId);
 }
 
-function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFilterArea, 
+function ListView({ orders, error, onSelectOrder, search, setSearch, filterArea, setFilterArea, 
   onOpenCuestionario, onOpenConsultas, theme, darkMode, setDarkMode }) {
   console.log("onOpenConsultas:", onOpenConsultas);
   
@@ -255,6 +255,24 @@ function ListView({ orders, onSelectOrder, search, setSearch, filterArea, setFil
 
         </div>
       )})}
+
+      {error && (
+        <div
+          style={{
+            margin: "20px",
+            padding: "16px",
+            borderRadius: "8px",
+            background: "#3A1F1F",
+            border: "1px solid #A94442",
+            color: "#F2DEDE",
+            textAlign: "center"
+          }}
+        >
+          ⚠️ No se pudo conectar con el servidor.
+          <br />
+          Verifique la conexión e intente nuevamente.
+        </div>
+      )}
 
     </div>
   );

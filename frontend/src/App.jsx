@@ -44,7 +44,8 @@ function App() {
     fetchOrders,
     moveOrder,
     updateLocalOrder,
-    addOrder
+    addOrder,
+    ordersError
   } = useOrders(user);
   const filteredOrders = useFilteredOrders({
     orders,
@@ -96,7 +97,7 @@ function App() {
   const handleCreateOrder = async (newOrder) => {
     const orderWithUser = {
       ...newOrder,
-      usuario_id: user.id   // 👈 CLAVE
+      usuario_id: user.id
     };
 
     const missing = [];
@@ -109,14 +110,25 @@ function App() {
       return;
     }
 
-    const savedOrder = await addOrder(orderWithUser);
+    try {
+      const savedOrder =
+        await addOrder(orderWithUser);
 
-    setSelectedOrder({
-      ...savedOrder,
-      cuestionario: [currentPrefill?.cuestionario || {}]
-    });
+      setSelectedOrder({
+        ...savedOrder,
+        cuestionario: [
+          currentPrefill?.cuestionario || {}
+        ]
+      });
 
-    setView("cuestionario");
+      setView("cuestionario");
+    } catch (err) {
+      console.error(err);
+
+      alert(
+        "No se pudo crear la orden.\n\nVerifica la conexión con el servidor e inténtalo nuevamente."
+      );
+    }
   };
 
   const handleUpdateOrder = (
@@ -233,6 +245,7 @@ function App() {
         {view === "kanban" && (
           <KanbanView
             filteredOrders={filteredOrders}
+            error={ordersError}
             usuarios={usuarios}
             search={search}
             setSearch={setSearch}
@@ -249,6 +262,7 @@ function App() {
         {view === "misOrdenes" && (
           <OrdersListView
             filteredOrders={filteredOrders}
+            error={ordersError}
             search={search}
             setSearch={setSearch}
             filterArea={filterArea}
@@ -291,6 +305,7 @@ function App() {
         {view === "list" && (
           <OrdersListView
             filteredOrders={filteredOrders}
+            error={ordersError}
             search={search}
             setSearch={setSearch}
             filterArea={filterArea}
@@ -306,6 +321,7 @@ function App() {
         {view === "cuestionarioView" && selectedOrder && (
           <CuestionarioView
             order={selectedOrder}
+            user={user}
             onClose={goBack}
             onEdit={openCuestionarioEdit}
             theme={theme}

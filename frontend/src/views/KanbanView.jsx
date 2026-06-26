@@ -2,6 +2,7 @@ import Kanban from "../components/Kanban";
 
 function KanbanView({
   filteredOrders,
+  error,
   usuarios,
   search,
   setSearch,
@@ -38,6 +39,7 @@ function KanbanView({
   return (
     <Kanban
       orders={filteredOrders}
+      error={error}
       users={usuarios}
       search={search}
       setSearch={setSearch}

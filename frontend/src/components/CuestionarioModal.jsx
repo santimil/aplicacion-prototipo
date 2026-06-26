@@ -107,9 +107,11 @@ function CuestionarioModal({ order, onClose, onSaveLocal, theme }) {
       onClose();
 
     } catch (err) {
-
       console.error(err);
 
+      alert(
+        "No se pudieron guardar los archivos."
+      );
     } finally {
 
       setSaving(false);

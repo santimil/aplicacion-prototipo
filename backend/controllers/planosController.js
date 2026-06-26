@@ -23,8 +23,14 @@ export async function uploadPlanos(req, res) {
 
       const fileBuffer = fs.readFileSync(file.path);
 
+      const safeFileName =
+        file.originalname
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^\w.-]/g, "_");
+
       const fileName =
-        `${Date.now()}-${file.originalname}`;
+        `${Date.now()}-${safeFileName}`;
 
       const storagePath =
         `${cuestionarioId}/${fileName}`;
@@ -38,8 +44,9 @@ export async function uploadPlanos(req, res) {
           });
 
       if (uploadError) {
-        console.error(uploadError);
-        continue;
+        return res.status(400).json({
+          error: uploadError.message
+        });
       }
 
       // 2️⃣ obtener url pública
@@ -70,8 +77,9 @@ export async function uploadPlanos(req, res) {
           .single();
 
       if (error) {
-        console.error(error);
-        continue;
+        return res.status(400).json({
+          error: error.message
+        });
       }
 
       uploaded.push(data);

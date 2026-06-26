@@ -2,6 +2,7 @@ import ListView from "../components/ListView";
 
 function OrdersListView({
   filteredOrders,
+  error,
   search,
   setSearch,
   filterArea,
@@ -32,6 +33,7 @@ function OrdersListView({
   return (
     <ListView
       orders={filteredOrders}
+      error={error}
       onSelectOrder={openOrderDetail}
       search={search}
       setSearch={setSearch}

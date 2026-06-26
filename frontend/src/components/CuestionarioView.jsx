@@ -3,7 +3,7 @@ import { getPlanos } from "../services/api";
 import { overlay, getModalStyle, getCardStyle, getActionButton, dividerStyle, 
   chipStyle, primaryLinkButton, sectionTitleStyle } from "../styles/styles";
 
-function CuestionarioView({ order, onClose, onEdit, theme }) {
+function CuestionarioView({ order, user, onClose, onEdit, theme }) {
 
   const [cuestionario, setCuestionario] = useState(null);
   const [planos, setPlanos] = useState([]);
@@ -272,22 +272,35 @@ function CuestionarioView({ order, onClose, onEdit, theme }) {
 
         )}
 
-        <div style={{ display: "flex", gap: 10, position: "sticky",
-                    bottom: 0, marginTop: 15 }}>
+        <div
+          style={{
+            display: "flex",
+            gap: 10,
+            position: "sticky",
+            bottom: 0,
+            marginTop: 15,
+            justifyContent: user?.rol === "admin"
+              ? "space-between"
+              : "center"
+          }}
+        >
 
-          {/* 👇 botón para editar */}
-          <button 
-            onClick={() => onEdit(order)}
+          {user?.rol === "admin" && (
+            <button
+              onClick={() => onEdit(order)}
+              style={actionButton}
+            >
+              ✏️ Editar
+            </button>
+          )}
+
+          <button
             style={actionButton}
+            onClick={onClose}
           >
-            ✏️ Editar
+            Cerrar
           </button>
 
-          <button 
-                style={actionButton}
-                onClick={onClose}>
-                Cerrar
-            </button>
         </div>
 
       </div>

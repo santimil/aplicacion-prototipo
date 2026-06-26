@@ -10,6 +10,8 @@ export function useOrders(user) {
 
   const [orders, setOrders] = useState([]);
 
+  const [ordersError, setOrdersError] = useState(null);
+
   const fetchOrders = async () => {
 
     try {
@@ -20,12 +22,20 @@ export function useOrders(user) {
 
       setOrders(data);
 
+      setOrdersError(null);
+
     } catch (err) {
+
+      setOrdersError(
+        "No se pudo conectar con el servidor."
+      );
 
       console.error(
         "Error obteniendo órdenes:",
         err
       );
+
+      console.error(err);
     }
   };
 
@@ -117,6 +127,7 @@ export function useOrders(user) {
     fetchOrders,
     moveOrder,
     updateLocalOrder,
-    addOrder
+    addOrder,
+    ordersError
   };
 }

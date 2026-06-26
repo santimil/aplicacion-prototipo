@@ -7,7 +7,7 @@ import {
   getDeliveryStatus
 } from "../utils/orderUtils";
 
-function Kanban({ orders, users, onSelectOrder, search, setSearch, filterArea, setFilterArea, 
+function Kanban({ orders, error, users, onSelectOrder, search, setSearch, filterArea, setFilterArea, 
   onOpenCuestionario, onOpenConsultas, theme, darkMode, setDarkMode }) {
 
   const getUserName = (id) => {
@@ -301,6 +301,24 @@ function Kanban({ orders, users, onSelectOrder, search, setSearch, filterArea, s
           </div>
         );
       })}
+
+      {error && (
+        <div
+          style={{
+            margin: "20px",
+            padding: "16px",
+            borderRadius: "8px",
+            background: "#3A1F1F",
+            border: "1px solid #A94442",
+            color: "#F2DEDE",
+            textAlign: "center"
+          }}
+        >
+          ⚠️ No se pudo conectar con el servidor.
+          <br />
+          Verifique la conexión e intente nuevamente.
+        </div>
+      )}
     </div>
   );
 }
