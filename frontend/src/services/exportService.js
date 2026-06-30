@@ -6,6 +6,8 @@ import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import { supabase } from "../supabaseClient";
+import { AREAS } from "../constant/orderConstants";
+import { getHistorial } from "../services/api"
 
 export async function exportToExcel(order) {
     const workbook = new ExcelJS.Workbook();
@@ -33,6 +35,110 @@ export async function exportToExcel(order) {
     const buffer = await workbook.xlsx.writeBuffer();
 
     saveAs(new Blob([buffer]), `orden_${order.numero}.xlsx`);
+  }
+
+  export async function exportPendingOrdersToExcel(orders) {
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("Orden");
+
+    const headers = [
+      "Número",
+      "Cliente",
+      "Trabajo",
+      "Prioridad",
+      "Fecha Ingreso",
+      "Fecha Entrega",
+      "Días Asignados",
+      ...AREAS.map(area => area.label)
+    ];
+
+    sheet.addRow(headers);
+
+    const headerRow = sheet.getRow(1);
+
+    // Poner toda la fila en negrita
+    headerRow.font = { bold: true };
+
+    function formatFecha(fecha) {
+        if (!fecha) return "";
+
+        const d = new Date(fecha);
+
+        return d.toLocaleString("es-UY", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
+    // Colorear solo las columnas de áreas
+    AREAS.forEach((area, index) => {
+      const cell = headerRow.getCell(index + 8); // 4 = empieza en la columna D
+
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: {
+          argb: `FF${area.color.replace("#", "")}`
+        }
+      };
+    });
+
+    for (const order of orders) {
+
+        const row = [
+            order.numero,
+            order.cliente,
+            order.trabajo,
+            order.prioridad,
+            order.fecha_ingreso,
+            order.fecha_entrega,
+            order.dias_asignados
+        ];
+
+        const historial = await getHistorial(order.id);
+        console.log("historial", historial);
+        const areasVisitadas = {};
+
+        historial.forEach(h => {
+            areasVisitadas[h.area_anterior] = formatFecha(h.timestamp);
+        });
+
+        console.log("areasV", areasVisitadas);
+
+        AREAS.forEach(area => {
+            if (order.area === area.id) {
+                row.push(area.icon);          // Área actual
+            } else {
+                row.push(areasVisitadas[area.id] || "");
+            }
+        });
+
+        sheet.addRow(row);
+
+    };
+
+    sheet.columns.forEach((column, i) => {
+      let maxLength = 10;
+
+      column.eachCell({ includeEmpty: true }, cell => {
+        const length = cell.value ? cell.value.toString().length : 0;
+        if (length > maxLength) {
+          maxLength = length;
+        }
+      });
+
+      // limitar ancho máximo (clave)
+      column.width = Math.min(maxLength + 2, 30);
+    });
+
+    sheet.getRow(1).font = { bold: true };
+
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    saveAs(new Blob([buffer]), `ordenes_pendientes.xlsx`);
   }
 
   export function exportToPDF(order, historial = []) {

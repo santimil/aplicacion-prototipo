@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { useNotifications } from "../hooks/useNotifications";
 import { useMenu } from "../hooks/useMenu";
 import { useOCR } from "../hooks/useOCR";
+import { exportPendingOrdersToExcel } from "../services/exportService";
 
 function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchOrders, selectO, 
   user, view, goToView, resetNavigation, handleLogout, theme, darkMode, setDarkMode }) {
@@ -42,6 +43,19 @@ function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchO
     fetchOrders,
     resetNavigation
   });
+
+  const handleExportar = () => {
+    const pendingOrders = orders.filter(
+      order => !order.fecha_entregado
+    );
+
+    if (pendingOrders.length === 0) {
+        alert("No hay órdenes pendientes para exportar.");
+        return;
+    }
+
+    exportPendingOrdersToExcel(pendingOrders);
+  }
 
 
   return (
@@ -240,6 +254,14 @@ function Header({ orders, onNewOrder, setPrefillQueue, setCurrentPrefill, fetchO
                 >
                   <span style={{ fontSize: 20 }}>👤</span>
                   Mis ordenes
+                </button>
+
+                <button
+                  onClick={handleExportar}
+                  style={menuItemStyle(theme)}
+                >
+                  <span style={{ fontSize: 20 }}>📦</span>
+                  Exportar pendientes
                 </button>
 
               <button
