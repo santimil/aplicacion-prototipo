@@ -80,9 +80,15 @@ export async function handleFile(req, res) {
         header: 1
       });
 
-      const headers = rows[3];
+      const headerIndex = rows.findIndex(row =>
+          row.some(cell =>
+              typeof cell === "string" &&
+              cell.toLowerCase().includes("cliente")
+          )
+      );
 
-      const dataRows = rows.slice(4);
+      const headers = rows[headerIndex];
+      const dataRows = rows.slice(headerIndex + 1);
 
       const json = dataRows.map(row => {
         const obj = {};
@@ -233,6 +239,55 @@ function normalizeKey(key) {
     return orders;
   }
 
+  function calculateAssignedDays(fechaInicio, fechaFin) {
+    if (!fechaInicio || !fechaFin) return "0";
+
+    const inicio = new Date(fechaInicio);
+    const fin = new Date(fechaFin);
+
+    const diffMs = fin - inicio;
+
+    const diffDays = Math.round(
+        diffMs / (1000 * 60 * 60 * 24)
+    );
+
+    return Math.max(diffDays, 0).toString();
+  }
+
+  function parsePlanillaTrabajoExcel(rows) {
+
+    return rows
+        .map(row => ({
+            numero: (
+                row["n° ot"] ||
+                row["nº ot"] ||
+                row["n°"] ||
+                ""
+            ).toString(),
+
+            cliente: row["cliente"] || "",
+
+            trabajo: row["detalle"] || "",
+
+            prioridad: "baja",
+
+            fechaIngreso: parseExcelDate(
+                row["f. de entrada"]
+            ),
+
+            area: "inicio",
+
+            diasAsignados: "0",
+
+            fechaEntrega: "",
+
+            notas: row["observaciones"] || "",
+
+            cuestionario: {}
+        }))
+        .filter(validateRow);
+  }
+
   function parseExcelToOrder(rows) {
     const normalizedRows = rows.map(normalizeRow);
 
@@ -243,12 +298,22 @@ function normalizeKey(key) {
       isVentasFormat(normalizedRows[0])
     );
 
+    console.log(
+      "isPlanillaFormat:",
+      isPlanillaTrabajoFormat(normalizedRows[0])
+    );
+
     if (
       normalizedRows.length > 0 &&
       isVentasFormat(normalizedRows[0])
     ) {
       console.log("USANDO PARSER VENTAS");
       return parseVentasExcel(normalizedRows);
+    }
+
+    if (normalizedRows.length > 0 && isPlanillaTrabajoFormat(normalizedRows[0])) {
+      console.log("USANDO PARSER PLANILLA");
+      return parsePlanillaTrabajoExcel(normalizedRows);
     }
 
     console.log("USANDO PARSER STANDARD");
@@ -267,6 +332,18 @@ function normalizeKey(key) {
           row["n°"] !== undefined
         )
       );
+    }
+
+    function isPlanillaTrabajoFormat(row) {
+        return (
+            row["cliente"] !== undefined &&
+            row["detalle"] !== undefined &&
+            (
+                row["n° ot"] !== undefined ||
+                row["nº ot"] !== undefined ||
+                row["n°"] !== undefined
+            )
+        );
     }
 
     function parseExcelDate(value) {

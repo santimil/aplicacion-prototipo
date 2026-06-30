@@ -34,7 +34,7 @@ export async function createOrder(req, res) {
       usuario_id
     } = req.body;
 
-    numero = numero?.trim();
+    numero = String(numero ?? "").trim();
     cliente = cliente?.trim();
     trabajo = trabajo?.trim();
 

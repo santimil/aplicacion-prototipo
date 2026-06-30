@@ -112,10 +112,10 @@ function OrderForm({ onCreate, onCancel, prefill, theme }) {
           onChange={e => handleChange("prioridad", e.target.value)}
           style={inputStyle}
         >
-          <option>Baja</option>
-          <option>Media</option>
-          <option>Alta</option>
-          <option>Urgente</option>
+          <option>baja</option>
+          <option>media</option>
+          <option>alta</option>
+          <option>urgente</option>
         </select>
       </div>
 
